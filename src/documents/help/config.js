@@ -1,0 +1,1 @@
+export const HELP_CLASS_ID_LIST = ["rechargeHelp", "couponGroupOwner", "niceGoodsHelp", "couponGroupMember", "goodsShareHelp", "goodsHelpExport"];

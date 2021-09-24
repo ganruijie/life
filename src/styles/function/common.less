@@ -1,0 +1,27 @@
+.f-pointer {
+  cursor: pointer;
+}
+
+.r {
+  float: right;
+}
+
+.f-clearfix {
+  zoom: 1;
+  overflow: hidden;
+
+  &::after {
+    clear: both;
+    content: ".";
+    display: block;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+}
+
+.f-active:active {
+  background: @color-active;
+}
+

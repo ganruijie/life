@@ -1,0 +1,122 @@
+{
+  "categoryInfo": "6,54,66",
+  "constructor": 1474561,
+  "activityDetailVO": {
+    "activityId": 209,
+    "activityPrice": 10000,
+    "activityTitle": "20190308秒杀-风扇",
+    "addSpikeNotifyToken": "1ySpZMbOkaY35wDYY4V4nXNHxA%2F2iZ0Xm1hk8WiIjCNHrrRgrosllWX%2FYsJyMNv%2BtEdtlpswkZKfRO7J8wAVbYnTfCrO7meCLYMSGv9RyUGi8LSQ4YPR1QbNRfkqvgyuKCAtk%2F17%2FINMpqOvP3MweF0Z5sGxFNtxBjjvtAtrzL2Norgi63zhS3VnREKAfGYizgG%2FJOsrbmhwk3fCTmQySBCu1wm2dH%2BLXdUlD9Wvf20RwXkw0emBffWZQ20Cw2ot41VCmG6UcsoEbnhQuT1RNTJSmV2Thj%2FG1mvk4LbK2bSg%3D",
+    "beginningTime": 1551888000000,
+    "closingTime": 1553961600000,
+    "comingTime": 1551887400000,
+    "currentTime": 1551945723888,
+    "reminderSwitch": -1
+  },
+  "descPhotoUrlList": [
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820012467696063.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820012659924318.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820012792278318.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820012975220825.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820013103561343.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820013301988122.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820013477330504.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820013653961553.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820013849128808.jpg"
+  ],
+  "description": "solove素乐 小风扇usb充电学生可爱桌面床上宿舍静音手持手拿便携式小型可充电扇小电风扇随身便携迷你小风扇",
+  "errorCode": 0,
+  "expressFee": 0,
+  "expressFlag": true,
+  "goldenbeanNum": 0,
+  "goodsId": "313392588247793664",
+  "goodsName": "solove素乐 小风扇usb充电学生可爱桌面床上宿舍静音手持手拿便携式小型可充电扇小电风扇随身便携迷你小风扇",
+  "goodsPhotoUrlList": [
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820011445876173.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820011820216233.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820014056133855.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820014204881152.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820014384921392.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820014524656555.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820014737229376.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820014852675900.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820015059882756.jpg",
+    "http://temp4try.oss-cn-shanghai.aliyuncs.com/p00402018122820015202885133.jpg"
+  ],
+  "goodsProcessStatus": 9,
+  "h5Url": "http://116.62.45.125:22299/h5/item.html",
+  "isSeller": true,
+  "messageLimitList": [
+    { "descAlias": "留言", "messageId": 1, "requiredFlag": false }
+  ],
+  "preSellDetail": {
+    "deliveryTimeText": "4月19日之前发货",
+    "deliveryType": 1,
+    "value": 1555603200000
+  },
+  "requestFrom": 0,
+  "selfDefinedFlag": false,
+  "selfDefinedPrice": 0,
+  "sellAvatarUrl": "",
+  "sellNickName": "测试",
+  "sellXianliaoId": "l2266803",
+  "serviceList": [
+    { "description": "所有商品无条件包邮啊", "serviceName": "全场包邮" },
+    { "description": "商家承诺7天无理由退换货", "serviceName": "7天退换" }
+  ],
+  "skuList": [
+    {
+      "goodsId": "313392588247793664",
+      "groupOwnerCommission": -1500,
+      "origPrice": 39000,
+      "salePrice": 20000,
+      "saleStatus": 2,
+      "skuId": 386,
+      "skuProperties": "{\"颜色\":\"清新黄\"}",
+      "soldNumber": 0,
+      "totalNumber": 10
+    },
+    {
+      "goodsId": "313392588247793664",
+      "groupOwnerCommission": -5470,
+      "origPrice": 39000,
+      "salePrice": 10000,
+      "saleStatus": 2,
+      "skuId": 387,
+      "skuProperties": "{\"颜色\":\"冰川白\"}",
+      "soldNumber": 0,
+      "totalNumber": 10
+    },
+    {
+      "goodsId": "313392588247793664",
+      "groupOwnerCommission": -1900,
+      "origPrice": 39000,
+      "salePrice": 19000,
+      "saleStatus": 2,
+      "skuId": 388,
+      "skuProperties": "{\"颜色\":\"珊瑚粉\"}",
+      "soldNumber": 0,
+      "totalNumber": 10
+    },
+    {
+      "goodsId": "313392588247793664",
+      "groupOwnerCommission": -1900,
+      "origPrice": 39000,
+      "salePrice": 19000,
+      "saleStatus": 2,
+      "skuId": 389,
+      "skuProperties": "{\"颜色\":\"深海蓝\"}",
+      "soldNumber": 0,
+      "totalNumber": 10
+    }
+  ],
+  "skuPropValueInfo": "[{\"key\":\"颜色\",\"value\":[\"清新黄\",\"冰川白\",\"珊瑚粉\",\"深海蓝\"]}]",
+  "supportH5Url": "http://116.62.45.125:22299/h5/concat.html?supportDetailToken=3ptxBTUG8Z96j1vmDi2GOmHJgr7e0HS9KPjNPARSrqfoYl4EZdlu3QRQi0N2kOmmWDpiNDRyd8awIVmSUNRhTV4gLg7vlLCwH8OI4X67XsZQLUA92kxXe%2FU9HT%2FQyGWBKw3MHQ7cEKYI4Waj2sR12hIco61G7k5%2B8i6r250xTwgsGQpLn%2B0fLaQPDWar3flJMKOTR8RtcoCmKoiY%2BkapdKy%2FT7oPq4ct4aLPZkUUxkzqA%2ByFWi3Xrk%2BRCRu2%2Botoe6FMZAC9JAig93gNWK06cMfYZCl1wLh50T0uv%2BIj%2BZBw%3D",
+  "supportNickName": "微机员",
+  "supportSmallAvatarUrl": "10060_small_1497413185586.jpg",
+  "supportUid": 10060,
+  "supportXianliaoId": "xlid_do7ygzruce",
+  "tokenSeqno": 1551945723888,
+  "totalSoldNumber": 39,
+  "validFlag": true,
+  "virtualFlag": false
+}

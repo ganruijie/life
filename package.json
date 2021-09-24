@@ -1,0 +1,43 @@
+{
+  "name": "okpay-life-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/dev.js",
+  "scripts": {
+    "serve": "vue-cli-service serve --mode dev",
+    "build": "vue-cli-service build --mode prod",
+    "build:dev": "vue-cli-service build --mode dev",
+    "build:test": "vue-cli-service build --mode prod-test",
+    "build:node-debug": "node --inspect-brk=9222 node_modules/@vue/cli-service/bin/vue-cli-service.js build",
+    "build:node-debug-webstorm": "node %NODE_DEBUG_OPTION% node_modules/@vue/cli-service/bin/vue-cli-service.js build",
+    "lint": "vue-cli-service lint"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.9.2",
+    "@vue/cli-plugin-eslint": "^3.9.2",
+    "@vue/cli-service": "^3.9.2",
+    "csp-html-webpack-plugin": "^3.0.2",
+    "ejs-loader": "^0.3.3",
+    "eruda": "^1.5.6",
+    "extract-loader": "^3.1.0",
+    "html-loader": "^0.5.5",
+    "less": "^3.9.0",
+    "less-loader": "^5.0.0",
+    "postcss-write-svg": "^3.0.1",
+    "style-resources-loader": "^1.2.1",
+    "vconsole-webpack-plugin": "^1.7.1",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "dependencies": {
+    "body-scroll-lock": "^2.6.4",
+    "clipboard": "^2.0.4",
+    "ejs": "^2.6.1",
+    "fast-deep-equal": "^2.0.1",
+    "fastclick": "^1.0.6",
+    "lodash.clonedeep": "^4.5.0",
+    "swiper": "^4.5.0",
+    "vue": "^2.6.10"
+  }
+}

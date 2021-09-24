@@ -1,0 +1,1 @@
+export const AVATAR_PREFIX = "http://basefile.updrips.com/";

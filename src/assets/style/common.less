@@ -1,0 +1,95 @@
+.container {
+  position: relative;
+  background: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-header {
+  background: white;
+  user-select: none;
+  .nav {
+    display: flex;
+    height: 100%;
+    font-size: .px2rem(14) [];
+    padding-top: .px2rem(3) [];
+    box-sizing: border-box;
+  }
+  .nav-item {
+    flex: 1;
+    height: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    
+    .exercise-icon {
+      position: absolute;
+      top: .px2rem(0) [];
+      right: .px2rem(5) [];
+      width: .px2rem(26) [];
+      height: .px2rem(14) [];
+      line-height: .px2rem(16) [];
+      background-color: #F23030;
+      border-radius: .px2rem(3.5) [] .px2rem(3.5) [] .px2rem(3.5) [] 0;
+      color: #FFFFFF;
+      font-family: PingFangHK-Regular;
+      font-size: .px2rem(10) [];
+    }
+    
+    .exercise-icon:after {
+      content: " ";
+      width: 0;
+      height: 0;
+      top: .px2rem(14) [];
+      right: .px2rem(23) [];
+      position: absolute;
+      border-right: .px2rem(3) [] solid transparent;
+      border-top: .px2rem(2) [] solid @color-red;
+    }
+
+    .nav-text {
+      height: 100%;
+      display: inline-block;
+      font-size: .px2rem(14) [];
+      line-height: .px2rem(45) [];
+      font-weight: bold;
+      color: #888888;
+    }
+    &.selected .nav-text {
+      color: #39449D;
+      border-bottom: .px2rem(3) [] solid @color-red;
+    }
+  }
+}
+
+.iosMain {
+  margin-top: 0px!important;
+}
+
+.m-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: .px2rem(8) [];
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background: white;
+ /deep/ form{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    div.page-content {
+      overflow-y: auto;
+      flex: 1 0 0;
+    }
+    .m-footer {
+      flex-shrink: 0;
+    }
+  }
+}

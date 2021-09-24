@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <%= require("@/tpl/head.ejs")({title: "联系信息"}) %>
+    <style>
+        html {  background-color: #efeff4;color: #333; }
+        .f-black { color: #333; }
+
+        .m-contact-info { margin-bottom: .26667rem;background-color: #fff; }
+        
+        .m-commodity-info { padding: .8rem 0 .58667rem 0;text-align: center;  }
+        .m-commodity-info h4 { margin-bottom: .4rem;color: #051b28;font-size: .45333rem;line-height: 1; }
+        .m-commodity-info p { color: #666;font-size: .34667rem;line-height: 1; }
+
+        .m-supplier-info { padding: .4rem .4rem 0 .4rem; }
+        .m-supplier-info h4 { margin-bottom: .4rem;font-size: .373333rem; }
+
+        .m-supply-user { margin-bottom: .4rem; }
+        .m-supply-user .copy { position: relative;bottom: .01333rem;float: right;border: 1px solid #c7c7c7;padding: 0 .34667rem;line-height: .50667rem;font-size: .32rem;color: #666;border-radius: 2px; }
+        .m-supply-user .avatar { float: left;margin-right: .29333rem;height: 1.0667rem;width: 1.0667rem;border-radius: 4px; }
+        .m-supply-user .name { line-height: .5333rem;font-size: .37333rem; }
+        .m-supply-user .xianliaoid { line-height: .5333rem;font-size: .34667rem;color: #888; }
+
+        .m-supply-group { margin-right: -.4rem;border-top: 1px solid #e6e6e6;line-height: 1.14667rem;color: #888;font-size: .34667rem; }
+
+        .m-add-step { padding: .5333rem .4rem .58667rem .4rem; }
+        .m-add-step h4 { margin-bottom: .4rem;font-size: .37333rem;line-height: 1; }
+        .m-step p{ margin-bottom: .2133rem;line-height: .56rem;color: #888;font-size: .34667rem; }
+        .m-step .f-more { color: #666;font-size: .37333rem; }
+    </style>
+</head>
+<body>
+    <main class="container m-contact">
+        <section class="m-contact-info m-commodity-info">
+            <h4 id="j-type">&nbsp;</h4>
+            <p>添加<span class="j-concat-from"></span>为好友，即可进行商品咨询</p>
+        </section>
+        <section class="m-contact-info m-supplier-info">
+            <h4><span class="j-concat-from"></span>信息</h4>
+            <div class="m-supply-user">
+                <button class="copy j-copy" data-clipboard-text="">复制</button>
+                <img src="" alt="" class="avatar" id="j-avatar">
+                <p class="name" id="j-nickname">&nbsp;</p>
+                <p class="xianliaoid" id="j-xianliaoid">&nbsp;</p>
+            </div>
+            <div class="m-supply-group">
+                <span class="f-black">群信息：</span><span id="j-groupname">...</span>
+            </div>
+        </section>
+        <section class="m-contact-info m-add-step">
+            <h4>添加<span class="j-concat-from"></span>步骤</h4>
+            <div class="m-step">
+                <p><span class="f-more">第一步：</span>复制<span class="j-concat-from"></span>手机号</p>
+                <p><span class="f-more">第二步：</span>点击【通讯录】->点击【新的好友】-> 粘贴<span class="j-concat-from"></span>手机号->在详细资料界面点击【添加】</p>
+                <p><span class="f-more">第三步：</span>等待<span class="j-concat-from"></span>同意好友添加请求，既可以与<span class="j-concat-from"></span>沟通</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
