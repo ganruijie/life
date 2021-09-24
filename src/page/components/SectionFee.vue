@@ -257,8 +257,7 @@ export default {
           })
         };
         // const res = await computeSucc(getChargeData)(params);
-        const fn = this.isAndroid ? window["MallJs"] :  window;
-        const res = await fn.getRenderData(this.chargeType);
+        const res = await this.getRenderData(this.chargeType);
         return { res, defaultDataFlag: !accountNum, accountNum };
       } catch (err) {
         if (err.errorCode === code.PHONE_INVALID) {
@@ -277,6 +276,45 @@ export default {
           text: err.errorMessage || msg[err.errorCode || code.NET_ERR]
         });
       }
+    },
+    getRenderData(type) {
+      return new Promise((resolve) => {
+        let list = [
+          {goodsVOList: [
+            {activityDescption: "", goodsId: 2021091811, amount: 1000000, goodsName: "MPT1", salePrice: 1000000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "", goodsId: 2021091812, amount: 2000000, goodsName: "MPT2", salePrice: 1900000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "hot", goodsId: 2021091813, amount: 3000000, goodsName: "MPT3", salePrice: 2760000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "", goodsId: 2021091814, amount: 5000000, goodsName: "MPT4", salePrice: 4160000, type: 1, virtualGoodsType: 1},
+          ], type: 1, title: "Choose Amount"},
+          {
+            goodsVOList: [
+              {activityDescption: "", goodsId: 2021091815, amount: 1200000, goodsName: "Data Shal Thone Package(1GB)", salePrice: 1160000, type: 1, virtualGoodsType: 2},
+              {activityDescption: "", goodsId: 2021091816, amount: 2200000, goodsName: "Data Shal Thone Package(3GB)", salePrice: 2160000, type: 1, virtualGoodsType: 2},
+              {activityDescption: "", goodsId: 2021091817, amount: 3200000, goodsName: "Data Shal Thone Package(5GB)", salePrice: 4160000, type: 1, virtualGoodsType: 2},
+            ], type: 1, title: "Choose Data Package"
+          },
+          {
+            goodsVOList: [
+              {activityDescption: "", goodsId: 2021091821, amount: 1000000, goodsName: "OORRDOO1", salePrice: 1100000, type: 2},
+              {activityDescption: "", goodsId: 2021091822, amount: 2000000, goodsName: "OORRDOO2", salePrice: 2000000, type: 2},
+              {activityDescption: "", goodsId: 2021091823, amount: 3000000, goodsName: "OORRDOO3", salePrice: 2800000, type: 2},
+            ],
+            type: 2
+          },
+          {
+            goodsVOList: [
+              {activityDescption: "", goodsId: 2021091831, amount: 1000000, goodsName: "OORRDOO1", salePrice: 10000000, type: 3},
+              {activityDescption: "", goodsId: 2021091832, amount: 2000000, goodsName: "OORRDOO2", salePrice: 1800000, type: 3},
+              {activityDescption: "", goodsId: 2021091833, amount: 3000000, goodsName: "OORRDOO3", salePrice: 2809000, type: 3},
+              {activityDescption: "", goodsId: 2021091843, amount: 4000000, goodsName: "OORRDOO4", salePrice: 3300000, type: 3},
+              {activityDescption: "hot", goodsId: 2021091853, amount: 6000000, goodsName: "OORRDOO5", salePrice: 5420000, type: 3},
+            ],
+            type: 3
+          },
+        ];
+        let goodsItemList = list.filter(item => item.type === type);
+        resolve({goodsItemList});
+      });
     },
     /**
      * 拉取列表数据后，对组件多个数据进行设置。

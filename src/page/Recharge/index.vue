@@ -89,10 +89,7 @@ export default {
       if (url.getParam("chargeType") !== "") {
         this.chargeType = url.getParam("chargeType");
       }
-      console.log(bridge, "909090");
-      console.log(window, "0000000");
       await bridge.readyPromisify();
-      
       // getRechargeToken 返回值的结构已和客户端约定好，见 appEnv.js 中 mockData，本地开发时得到的数据来自于该 mockData 数据；
       // 另外现在的几个 token 值相同，取用任意一个都行
       const [

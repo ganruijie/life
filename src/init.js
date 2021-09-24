@@ -6,7 +6,7 @@ export default  function initialize(app) {
     // import("eruda").then(module => {
     //   module.default.init();
     // });
-    // import(/* webpackChunkName: "appEnv" */"@/../mock/appEnv.js");
+    import(/* webpackChunkName: "appEnv" */"@/../mock/appEnv.js");
   }
   window.addEventListener("DOMContentLoaded", function () {
     Fastclick.attach(document.body);

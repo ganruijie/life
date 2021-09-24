@@ -74,12 +74,6 @@ const initalize = g => {
       /*  encodeURIComponent(JSON.stringify(mockData.goodsAddingStatus))*/
       );
     },
-    getOrderReq(data, str) {
-      log.debug("getOrderReq", data, str);
-    },
-    getOrderReqSucc(name, options) {
-      return g[name] && g[name](options); ;
-    },
     prepareToBuyGoods(options) {
       log.debug("prepareToBuyGoods", JSON.parse(options));
     },
@@ -136,13 +130,6 @@ const initalize = g => {
     getRechargeToken(name) {
       g[name]();
     },
-    getRenderData(type) {
-      return new Promise((resolve) => {
-        let goodsItemList = mockData.renderData.filter(item => item.type === type);
-
-        resolve({goodsItemList});
-      });
-    }
   };
   var env = g;
   if (!isIos()) {
