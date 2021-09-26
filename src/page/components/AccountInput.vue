@@ -66,10 +66,10 @@ export default {
           this.rules = [];
           this.iptDomType = "tel";
           placeholder = "Phone Number";
-          this.rules.push({
-            reg: /^1(3|4|5|6|7|8|9)\d{9}$/,
-            errMsg: "Please enter the correct phone number",
-          });
+          // this.rules.push({
+          //   reg: /^1(3|4|5|6|7|8|9)\d{9}$/,
+          //   errMsg: "Please enter the correct phone number",
+          // });
           break;
         case 2: //QQ号
           this.rules = [];

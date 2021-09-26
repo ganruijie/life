@@ -169,8 +169,11 @@ class Bridge {
     this.env[this.api[1]] && this.env[this.api[1]](globalName);
     return pm;
   }
-  getOrderReq(data, str) {
-    this.env[this.api[2]] && this.env[this.api[2]](data, str);
+  getOrderReq(data) {
+    let globalName = genGlobalUnionName();
+    let pm = genAsync({ globalName });
+    this.env[this.api[2]] && this.env[this.api[2]](data, globalName);
+    return pm;
   }
   showPic({ list, current }) {
     if (!Array.isArray(list) || (current < 0 || current >= list.length)) {
@@ -183,12 +186,6 @@ class Bridge {
           current: current
         })
       );
-  }
-  getOrderReqSucc(options) {
-    let globalName = genGlobalUnionName();
-    let pm = genAsync({ globalName });
-    this.env[this.api[4]] && this.env[this.api[4]](globalName, JSON.stringify({ ...options }));
-    return pm;
   }
   addMyShopCart(options) {
     let globalName = genGlobalUnionName();

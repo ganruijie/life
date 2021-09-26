@@ -89,23 +89,28 @@ export default {
       if (url.getParam("chargeType") !== "") {
         this.chargeType = url.getParam("chargeType");
       }
-      await bridge.readyPromisify();
+      // await bridge.readyPromisify();
       // getRechargeToken 返回值的结构已和客户端约定好，见 appEnv.js 中 mockData，本地开发时得到的数据来自于该 mockData 数据；
       // 另外现在的几个 token 值相同，取用任意一个都行
-      const [
-        feeListToken,
-        dataListToken,
-        osCode,
-        json,
-      ] = await bridge.getRechargeToken();
+      // const [
+      //   feeListToken = "48%2BdJIltE00%2F34FnueiZg4UI9uGi%2B2ZJOc8z0uE1M%2FWwyDft31JgN5x9bhlP8y52UwdEO2qVFrXtnwmhAB6djqJ4yYgmtI4ptJPq6IpwSQ8%2FYHnmt3581T1Bcnd47mVPTYXc2P5r8WbZlW1Am%2B7AWfJEfe%2F5HwblrEZu1%2FQLoiRpchYk8ZJPHD9J9r2q%2BpdH2Ko%2BpXqCmS1J9U6z9fbLsR%2Fncl5YC6bymfD4vExYKKOc%3D",
+      //   dataListToken = "48%2BdJIltE00%2F34FnueiZg4UI9uGi%2B2ZJOc8z0uE1M%2FWwyDft31JgN5x9bhlP8y52UwdEO2qVFrXtnwmhAB6djqJ4yYgmtI4ptJPq6IpwSQ8%2FYHnmt3581T1Bcnd47mVPTYXc2P5r8WbZlW1Am%2B7AWfJEfe%2F5HwblrEZu1%2FQLoiRpchYk8ZJPHD9J9r2q%2BpdH2Ko%2BpXqCmS1J9U6z9fbLsR%2Fncl5YC6bymfD4vExYKKOc%3D",
+      //   osCode = 2,
+      //   json = encodeURIComponent(JSON.stringify({supportGoodType: 7})),
+      // ] = await bridge.getRechargeToken();
       
+      // this.preconditionData = {
+      //   requestToken: feeListToken,
+      //   osCode: osCode || 2,
+      // };
       this.preconditionData = {
-        requestToken: feeListToken,
-        osCode,
+        requestToken: "48%2BdJIltE00%2F34FnueiZg4UI9uGi%2B2ZJOc8z0uE1M%2FWwyDft31JgN5x9bhlP8y52UwdEO2qVFrXtnwmhAB6djqJ4yYgmtI4ptJPq6IpwSQ8%2FYHnmt3581T1Bcnd47mVPTYXc2P5r8WbZlW1Am%2B7AWfJEfe%2F5HwblrEZu1%2FQLoiRpchYk8ZJPHD9J9r2q%2BpdH2Ko%2BpXqCmS1J9U6z9fbLsR%2Fncl5YC6bymfD4vExYKKOc%3D",
+        osCode: 2,
       };
       try {
         //如果不传设置为默认值0
-        this.supportGoodType = json ? JSON.parse(decodeURIComponent(json)).supportGoodType : 0;
+        // this.supportGoodType = json ? JSON.parse(decodeURIComponent(json)).supportGoodType : 0;
+        this.supportGoodType = encodeURIComponent(JSON.stringify({supportGoodType: 7}));
         this.rechargeItem = await this.getItemList(this.supportGoodType);
       } catch (e) {
         this.rechargeItem = [];

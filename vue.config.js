@@ -19,7 +19,7 @@ const htmlPluginOptsArr = getNoEntryPages(entriesFolder, htmlFolder);
 const pages = getPages(entriesFolder, htmlFolder);
 
 module.exports = {
-  publicPath: isProd ? "/h5/" : "",
+  publicPath: isProd ? "" : "",
   pages: {
     ...pages
   },

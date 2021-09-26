@@ -50,7 +50,7 @@ export default {
   &.active,
   &:active {
     color: @color-btn-active-ft;
-    background-color: @color-btn-active-bg;
+    background-color: @color-btn-bg;
   }
   &:disabled,&[disabled] {
     color: @color-btn-disable-ft;

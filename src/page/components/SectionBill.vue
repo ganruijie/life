@@ -5,6 +5,36 @@
   >
     <!-- 阻止表单提交，避免在输入框里回车时触发提交方法 -->
     <div class="page-content">
+      <!-- 运营商 -->
+      <div v-if="electricitySelect && !subscriber">1111</div>
+      <div v-else-if="subscriber && electricitySelect">2222</div>
+      <!-- 输入Subscriber-->
+      <div 
+        v-else 
+        class="bill-input-sub" >
+        <ul class="electricity-list">
+          <li
+            class="charge-item-full"
+            v-for="(ele, index) in electricity"
+            :key="index">
+            <form-radio
+              name="electricity"
+              class="charge-item-radio"
+              :btn-class="'radio-item-btn'"
+              @input="selectElectricity(ele.id)"
+              :val-code="ele.id">
+              <div
+                class="value-wrapper">
+                <template>
+                  <p 
+                    class="face-value" 
+                    style="margin-top: 0">{{ ele.title }}</p>
+                </template>
+              </div>
+            </form-radio>
+          </li>
+        </ul>
+      </div>
       <div class="game-type-nav f-clearfix">
         <div
           v-for="item in chargeList"
@@ -35,7 +65,7 @@
           </a>
         </div>
       </div>
-      <div class="divide-line" />
+      <!-- 输入Subscriber详情 -->
       <div
         v-if="chargeList && chargeList.length > 0"
         @click="$refs.inputServe.input.focus();"
@@ -100,12 +130,14 @@
 <script>import { constructorMap } from "@/config/macroMap";
 import { code, msg } from "@/config/error.js";
 import AccountInput from "./AccountInput";
+import FormRadio from "@/components/form/FormRadio.vue";
 import StyledButton from "@/components/StyledButton.vue";
 import ChargesAmountGroup from "./ChargesAmountGroup";
 import bridge from "@/modules/bridge";
 import { formatPrice } from "@/modules/formatter";
 import { computeSucc, getChargeData } from "@/modules/api";
 import { isAndroid } from "@/modules/env";
+import * as url from "@/modules/url";
 
 export default {
   name: "SectionGame",
@@ -113,6 +145,7 @@ export default {
     AccountInput,
     StyledButton,
     ChargesAmountGroup,
+    FormRadio
   },
   props: {
     precondition: {
@@ -140,6 +173,16 @@ export default {
       accountNum: "",
       error: "",
       focused: false,
+      // 
+      electricity: [
+        {id: 1, title: "Electricity Bill(Yangon)"},
+        {id: 2, title: "Electricity Bill(Mandalay)"},
+        {id: 3, title: "Electricity Bill(Ayeyarwaddy)"},
+        {id: 4, title: "Electricity Bill(Kayin)"},
+        {id: 5, title: "Electricity Bill(NayPyiTaw)"},
+        {id: 6, title: "Electricity Bill(Magwe)"},
+        {id: 7, title: "SKYNET"},
+      ]
     };
   },
   watch: {
@@ -160,6 +203,9 @@ export default {
     },
   },
   computed: {
+    baseUrl() {
+      return process.env.BASE_URL;
+    },
     isAndroid() {
       return isAndroid();
     },
@@ -186,6 +232,12 @@ export default {
     price() {
       return (this.selectedMeal && this.selectedMeal.salePrice) || 0;
     },
+    electricitySelect() {
+      return url.getParam("type");
+    },
+    subscriber() {
+      return url.getParam("subscriber");
+    }
   },
   methods: {
     //token改变加载页面数据设置请求参数
@@ -221,6 +273,12 @@ export default {
           text: err.errorMessage || msg[err.errorCode || code.NET_ERR]
         });
       }
+    },
+    /**
+     * 选中electricity
+    */
+    selectElectricity(id) {
+      window.location.href = `${this.baseUrl}/bill.html?type=${id}`;
     },
     /**
      * 拉取列表数据后，对组件多个数据进行设置。

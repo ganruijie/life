@@ -121,9 +121,9 @@ export default {
 <style lang="less" scoped>
 .charges-amount-group {
   padding-bottom: .px2rem(28) [];
-  &:first-child {
-    padding-top: .px2rem(12) [];
-  }
+  // &:first-child {
+  //   padding-top: .px2rem(12) [];
+  // }
   &:last-child {
     padding-bottom: .px2rem(20) [];
     .stretch & {

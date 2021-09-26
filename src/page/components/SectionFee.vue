@@ -136,6 +136,9 @@ export default {
     }
   },
   computed: {
+    baseUrl() {
+      return process.env.BASE_URL;
+    },
     isAndroid() {
       return isAndroid();
     },
@@ -215,16 +218,16 @@ export default {
       //   });
       //   return;
       // }
-      if (accountNum.length !== 11) {
-        //如果手机号码有且不足11位
-        accountNum && (this.error = "请输入完整的手机号码");
-        //如果当前数据不为空,返回。
-        if (this.hasMeals) {
-          return;
-        }
-        //如果数据为空获取默认数据
-        accountNum = "";
-      }
+      // if (accountNum.length !== 11) {
+      //   //如果手机号码有且不足11位
+      //   accountNum && (this.error = "请输入完整的手机号码");
+      //   //如果当前数据不为空,返回。
+      //   if (this.hasMeals) {
+      //     return;
+      //   }
+      //   //如果数据为空获取默认数据
+      //   accountNum = "";
+      // }
       return await this.getData(accountNum);
     },
     async getData(accountNum) {
@@ -281,10 +284,10 @@ export default {
       return new Promise((resolve) => {
         let list = [
           {goodsVOList: [
-            {activityDescption: "", goodsId: 2021091811, amount: 1000000, goodsName: "MPT1", salePrice: 1000000, type: 1, virtualGoodsType: 1},
-            {activityDescption: "", goodsId: 2021091812, amount: 2000000, goodsName: "MPT2", salePrice: 1900000, type: 1, virtualGoodsType: 1},
-            {activityDescption: "hot", goodsId: 2021091813, amount: 3000000, goodsName: "MPT3", salePrice: 2760000, type: 1, virtualGoodsType: 1},
-            {activityDescption: "", goodsId: 2021091814, amount: 5000000, goodsName: "MPT4", salePrice: 4160000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "", goodsId: 2021091811, amount: 1000000, goodsName: "Top Up 1000 Ks", salePrice: 1000000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "", goodsId: 2021091812, amount: 2000000, goodsName: "Top Up 2000 Ks", salePrice: 1900000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "hot", goodsId: 2021091813, amount: 3000000, goodsName: "Top Up 3000 Ks", salePrice: 2760000, type: 1, virtualGoodsType: 1},
+            {activityDescption: "", goodsId: 2021091814, amount: 5000000, goodsName: "Top Up 5000 Ks", salePrice: 4160000, type: 1, virtualGoodsType: 1},
           ], type: 1, title: "Choose Amount"},
           {
             goodsVOList: [
@@ -295,19 +298,25 @@ export default {
           },
           {
             goodsVOList: [
-              {activityDescption: "", goodsId: 2021091821, amount: 1000000, goodsName: "OORRDOO1", salePrice: 1100000, type: 2},
-              {activityDescption: "", goodsId: 2021091822, amount: 2000000, goodsName: "OORRDOO2", salePrice: 2000000, type: 2},
-              {activityDescption: "", goodsId: 2021091823, amount: 3000000, goodsName: "OORRDOO3", salePrice: 2800000, type: 2},
+              {activityDescption: "", goodsId: 2021091821, amount: 1000000, goodsName: "Top Up 1000 Ks", salePrice: 1100000, type: 2},
+              {activityDescption: "", goodsId: 2021091822, amount: 2000000, goodsName: "Top Up 2000 Ks", salePrice: 2000000, type: 2},
+              {activityDescption: "", goodsId: 2021091823, amount: 3000000, goodsName: "Top Up 3000 Ks", salePrice: 2800000, type: 2},
             ],
             type: 2
           },
           {
             goodsVOList: [
-              {activityDescption: "", goodsId: 2021091831, amount: 1000000, goodsName: "OORRDOO1", salePrice: 10000000, type: 3},
-              {activityDescption: "", goodsId: 2021091832, amount: 2000000, goodsName: "OORRDOO2", salePrice: 1800000, type: 3},
-              {activityDescption: "", goodsId: 2021091833, amount: 3000000, goodsName: "OORRDOO3", salePrice: 2809000, type: 3},
-              {activityDescption: "", goodsId: 2021091843, amount: 4000000, goodsName: "OORRDOO4", salePrice: 3300000, type: 3},
-              {activityDescption: "hot", goodsId: 2021091853, amount: 6000000, goodsName: "OORRDOO5", salePrice: 5420000, type: 3},
+              {activityDescption: "hot", goodsId: 2021091815, amount: 1100000, goodsName: "Data Shal Thone Package(1GB)", salePrice: 1160000, type: 2, virtualGoodsType: 2},
+              {activityDescption: "", goodsId: 2021091816, amount: 2100000, goodsName: "Data Shal Thone Package(3GB)", salePrice: 2160000, type: 2, virtualGoodsType: 2},
+            ], type: 2, title: "Choose Data Package"
+          },
+          {
+            goodsVOList: [
+              {activityDescption: "", goodsId: 2021091831, amount: 1000000, goodsName: "Top Up 1000 Ks", salePrice: 10000000, type: 3},
+              {activityDescption: "", goodsId: 2021091832, amount: 2000000, goodsName: "Top Up 2000 Ks", salePrice: 1800000, type: 3},
+              {activityDescption: "", goodsId: 2021091833, amount: 3000000, goodsName: "Top Up 3000 Ks", salePrice: 2809000, type: 3},
+              {activityDescption: "", goodsId: 2021091843, amount: 4000000, goodsName: "Top Up 4000 Ks", salePrice: 3300000, type: 3},
+              {activityDescption: "hot", goodsId: 2021091853, amount: 6000000, goodsName: "Top Up 6000 Ks", salePrice: 5420000, type: 3},
             ],
             type: 3
           },
@@ -353,7 +362,7 @@ export default {
      * @param {String} value
      * */
     accountInput(value) {
-      value = this.accountReset(value);
+      // value = this.accountReset(value);
       if (this.accountNum === value) {
         return;
       }
@@ -361,7 +370,8 @@ export default {
       this.error = "";
       this.tips = "";
       this.contactName = "";
-      this.isServerValid = false;
+      // this.isServerValid = false;
+      this.isServerValid = value === "" ? false : true;
     },
     /**
      * @param {String} value
@@ -410,10 +420,12 @@ export default {
       // bridge.prepareToBuyRechargeGoods(params);
       await computeSucc(dispatchRecharge)({params: JSON.stringify(params), version: 1, timestamp: +new Date()}).then(res => {
         const { data } = res;
+        console.log(bridge, "bridgebridge");
         const str = `Please confirm purchase\n Confirm the Phone Number\n${this.accountNum}?`;
-        const fn = this.isAndroid ? window["MallJs"] :  window;
         this.$tips.showConfirm({text: str}).then(() => {
-          fn.getOrderReq1(data, "getOrderReqSucc");
+          bridge.getOrderReq(data).then(res => {
+            window.location.href = `${this.baseUrl}/pay-result.html?type=1&goodsName=${params.productName}&amount=${params.amount}&orderNo=${res}`;
+          });
         });
       }).finally(() => {
 
@@ -458,15 +470,6 @@ export default {
     padding-left: .px2rem(12) [];
     font-size: 0;
   }
-  .phone-num-tips {
-    flex-basis: .px2rem(15) [];
-    line-height: .px2rem(15) [];
-    font-size: .px2rem(10) [];
-    color: #888;
-    &.error {
-      color: @color-red;
-    }
-  }
   .address-book-btn {
     display: block;
     padding: .px2rem(0) [] .px2rem(12) [];
@@ -480,6 +483,15 @@ export default {
       background-size: .px2rem(21.525) [];
       background-position: center;
     }
+  }
+}
+.phone-num-tips {
+  flex-basis: .px2rem(15) [];
+  line-height: .px2rem(15) [];
+  font-size: .px2rem(10) [];
+  color: #888;
+  &.error {
+    color: @color-red;
   }
 }
 .top-up-padding {
