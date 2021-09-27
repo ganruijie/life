@@ -172,7 +172,12 @@ class Bridge {
   getOrderReq(data) {
     let globalName = genGlobalUnionName();
     let pm = genAsync({ globalName });
-    this.env[this.api[2]] && this.env[this.api[2]](data, globalName);
+    if (IS_IOS) {
+      let str = JSON.stringify({data: data, callbackName: globalName});
+      window.webkit && window.webkit.messageHandlers[this.api[2]] && window.webkit.messageHandlers[this.api[2]].postMessage(str);
+    } else {
+      this.env[this.api[2]] && this.env[this.api[2]](data, globalName);
+    } 
     return pm;
   }
   showPic({ list, current }) {
@@ -219,7 +224,11 @@ class Bridge {
   getConcatFromAddressBooks() {
     let globalName = genGlobalUnionName();
     let pm = genAsync({ globalName });
-    this.env[this.api[12]] && this.env[this.api[12]](globalName);
+    if (IS_IOS) {
+      window.webkit && window.webkit.messageHandlers[this.api[12]] && window.webkit.messageHandlers[this.api[12]].postMessage(globalName);
+    } else {
+      this.env[this.api[12]] && this.env[this.api[12]](globalName);
+    }
     return pm;
   }
 }

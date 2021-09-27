@@ -1,17 +1,59 @@
 <template>
-  <form
-    class="game-charge-section"
-    @submit.prevent="() => false"
-  >
+  <form @submit.prevent="() => false">
     <!-- 阻止表单提交，避免在输入框里回车时触发提交方法 -->
     <div class="page-content">
       <!-- 运营商 -->
-      <div v-if="electricitySelect && !subscriber">1111</div>
-      <div v-else-if="subscriber && electricitySelect">2222</div>
+      <div 
+        class="input-subscriber"
+        v-if="electricitySelect && !subscriber">
+        <form 
+          class="input-subscriber-content" 
+          @submit.prevent="submitSubscriber">
+          <div class="subscriber-box-bg" />
+          <div class="subscriber-box">
+            <div class="subscriber-name">
+              <p class="title">Payment unit</p>
+              <p class="value">{{ electricityTitle }}</p>
+            </div>
+            <div class="subscriber-input">
+              <p class="input-title">Subscriber</p>
+              <div class="input-box">
+                <input
+                  ref="input"
+                  name="subscriber"
+                  placeholder="Enter Your Electricity Bill"
+                  autocomplete="off"
+                  v-model="subscriberValue"
+                  maxlength="30">
+                <span 
+                  type="submit"
+                  @click="submitSubscriber"
+                  class="search-btn"><i class="ic-search" /></span>
+              </div>
+            </div>
+            <div class="subscriber-tips">
+              <p>How to check your Subscriber NO.?Find it on your Electricity Bill or call the customer service NO. 09369746932 to request.</p>
+            </div>
+          </div>
+          <div class="subscriber-btn">
+            <styled-button
+              type="submit"
+              tag="button"
+              class="confirm-btn"
+              :disabled="isDisabled"
+            >Next</styled-button>
+          </div>
+        </form>
+      </div>
+      <div v-else-if="subscriber && electricitySelect">
+        <div class="subscriber-bill">
+          <div>2222</div>
+        </div>
+      </div>
       <!-- 输入Subscriber-->
       <div 
         v-else 
-        class="bill-input-sub" >
+        class="bill-input-sub">
         <ul class="electricity-list">
           <li
             class="charge-item-full"
@@ -26,9 +68,8 @@
               <div
                 class="value-wrapper">
                 <template>
-                  <p 
-                    class="face-value" 
-                    style="margin-top: 0">{{ ele.title }}</p>
+                  <p class="face-value" >{{ ele.title }}</p>
+                  <p class="face-right" />
                 </template>
               </div>
             </form-radio>
@@ -86,44 +127,7 @@
           {{ error || "" }}
         </p>
       </div>
-      <div
-        v-if="!loading"
-        class="charge-content"
-      >
-        <template v-if="hasMeals">
-          <ChargesAmountGroup
-            :is-server-valid="isServerValid"
-            v-for="(group, index) in validMeals"
-            :key="index"
-            :show-title="validMeals.length > 1"
-            @input="data => selectedMeal = data"
-            v-model="selectedMeal"
-            :group="group"
-          />
-        </template>
-        <template v-else>
-          <div class="bg-no-charges" />
-          <p class="text-no-charges">
-            暂无充值套餐
-          </p>
-        </template>
-      </div>
     </div>
-    <footer
-      v-if="!hideFooter"
-      class="m-footer"
-    >
-      <StyledButton
-        v-show="hasMeals"
-        type="button"
-        @click="submit"
-        tag="button"
-        class="confirm-btn"
-        :disabled="isDisabled"
-      >
-        ¥{{ price | formatPrice(true) }}立即充值
-      </StyledButton>
-    </footer>
   </form>
 </template>
 
@@ -161,8 +165,6 @@ export default {
     return {
       loading: true,
       mealList: [],
-      isServerValid: false,
-      selectedMeal: null,
       //充值种类
       severType: undefined,
       chargeList: [],
@@ -182,6 +184,16 @@ export default {
         {id: 5, title: "Electricity Bill(NayPyiTaw)"},
         {id: 6, title: "Electricity Bill(Magwe)"},
         {id: 7, title: "SKYNET"},
+      ],
+      subscriberValue: null,
+      bill: [
+        {orderNo: "24GH67854768", title: "Electricity Bill(Yangon)", amount: 980000, status: 1, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {orderNo: "8888888888", title: "Electricity Bill(Mandalay)", amount: 880000, status: 2, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {orderNo: "24GH67854767", title: "Electricity Bill(Ayeyarwaddy)", amount: 1080000, status: 3, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {orderNo: "24GH67854766", title: "Electricity Bill(Kayin)", amount: 960000, status: 1, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {orderNo: "24GH67854765", title: "Electricity Bill(NayPyiTaw)", amount: 970000, status: 2, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {orderNo: "24GH67854764", title: "Electricity Bill(Magwe)", amount: 990000, status: 3, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {orderNo: "24GH67854763", title: "SKYNET", amount: 120000, status: 1, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
       ]
     };
   },
@@ -209,12 +221,6 @@ export default {
     isAndroid() {
       return isAndroid();
     },
-    //验证是否有充值套餐
-    validMeals() {
-      const arr = this.mealList.filter(ele => ele.itemVOList.length);
-      this.selectedMeal = arr.length > 0 ? arr[0].itemVOList && arr[0].itemVOList[0] : null;
-      return arr;
-    },
     /** @return {Boolean}*/
     hasMeals() { // 是否存在充值套餐
       return (
@@ -222,21 +228,22 @@ export default {
         && this.validMeals.some(group => group.itemVOList.length !== 0)
       );
     },
-    //充值按钮是否可以点击
+    //按钮是否可以点击
     isDisabled() {
-      return !this.accountNum || !!this.error || !this.isServerValid || !this.selectedMeal;
+      return !this.subscriberValue || !!this.error;
     },
     hideFooter() {
       return this.isAndroid && this.focused;
-    },
-    price() {
-      return (this.selectedMeal && this.selectedMeal.salePrice) || 0;
     },
     electricitySelect() {
       return url.getParam("type");
     },
     subscriber() {
       return url.getParam("subscriber");
+    },
+    electricityTitle() {
+      let res =  this.electricity.find(item => `${item.id}` === this.electricitySelect);
+      return (res && res["title"]) || "";
     }
   },
   methods: {
@@ -280,6 +287,13 @@ export default {
     selectElectricity(id) {
       window.location.href = `${this.baseUrl}/bill.html?type=${id}`;
     },
+    // 输入完整Electricity Bill后提交
+    submitSubscriber() {
+      if (this.isDisabled) {
+        return;
+      }
+      window.location.href = `${this.baseUrl}/bill.html?type=${this.electricitySelect}&subscriber=${this.subscriberValue}`;
+    },
     /**
      * 拉取列表数据后，对组件多个数据进行设置。
      * */
@@ -293,7 +307,6 @@ export default {
       this.chargeList = categoryVOList || [];
       this.severType = this.severType || (this.chargeList[0] && this.chargeList[0].categoryId);
       //拉取充值类型的列表后下面的充值种类设置为可点击
-      this.isServerValid = true;
     },
     //请求对应的充值金额
     async getChargeMeal() {
@@ -338,18 +351,14 @@ export default {
       if (this.isDisabled) {
         return;
       }
-      let params = {
-        goodsId: this.selectedMeal.goodsId.toString(),
-        payAmount: this.selectedMeal.salePrice.toString(),
-        mobile: this.accountNum.toString()
-      };
+      let params = {};
       if (this.supportType == 7) {
         params.paramsJsonStr = "";
         params.orderGoodsType = "QQSERVICE";
       } else {
         params.orderGoodsType = "5";
       }
-      const str = `确定向QQ账号\n ${this.accountNum} 充值${this.selectedMeal.description}?`;
+      const str = `确定向QQ账号\n ${this.accountNum} 充值?`;
       await this.$tips.showConfirm({text: str});
       bridge.prepareToBuyRechargeGoods(params);
     },
@@ -427,10 +436,6 @@ export default {
       }
     }
   }
-  .divide-line {
-    height: .px2rem(8) [];
-    background-color: #f5f5f5;
-  }
   .input-wrapper {
     margin-top: .px2rem(20) [];
     display: flex;
@@ -469,20 +474,122 @@ export default {
       text-align: center;
     }
   }
-  .m-footer {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    box-sizing: border-box;
-    padding: 0 .px2rem(15) [] .px2rem(9.5) [];
-    background: white;
-    font-size: 0;
-    user-select: none;
-    .confirm-btn {
-      .f-pingfang-semibold();
-      line-height: .px2rem(44) [];
-      height: .px2rem(44) [];
-      font-size: .px2rem(17) [];
+  .bill-input-sub {
+    padding: .px2rem(16) [];
+  }
+  ::v-deep .electricity-list {
+    .charge-item-radio {
+      width: 100%;
+    }
+    .styled-button {
+      line-height: .px2rem(20) [];
+      padding: .px2rem(14) [] .px2rem(12) [];
+      font-size: .px2rem(14) [];
+      color: #333;
+      border-color: #F0F0F0;
+      text-align: left;
+    }
+    .charge-item-full+.charge-item-full {
+      margin-top: .px2rem(10) [];
+    }
+    .value-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .face-right {
+        width: .px2rem(14) [];
+        height: .px2rem(24) [];
+        background-image: url(~@/assets/bill/arrow-right.svg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+    }
+  }
+  .input-subscriber {
+    .input-subscriber-content {
+      padding: .px2rem(16) [];
+      position: relative;
+      .subscriber-box-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: .px2rem(260) [];
+        width: 100vw;
+        background: linear-gradient(141deg, #6E3DF9 0%, #623CF8 100%);
+        border-radius: 0 0 .px2rem(30) [] .px2rem(30) [];
+      }
+    }
+    .subscriber-box {
+      z-index: 10;
+      background: #FFFFFF;
+      box-shadow: 0px 12px 30px 1px rgba(36, 34, 116, 0.08);
+      padding: .px2rem(16) [];
+      border-radius: .px2rem(10) [];
+    }
+    .subscriber-name {
+      margin-bottom: .px2rem(30) [];
+      .title {
+        font-size: .px2rem(14) [];
+        color: #8F92A1;
+        line-height: .px2rem(20) [];
+      }
+      .value {
+        font-size: .px2rem(16) [];
+        color: #39449D;
+        line-height: .px2rem(20) [];
+      }
+    }
+    .subscriber-input {
+      .input-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: .px2rem(4) [];
+        border-bottom: 1px solid #E6E6E6;
+        height: .px2rem(26) [];
+      }
+      .input-title {
+        font-size: .px2rem(14) [];
+        color: #333;
+        line-height: .px2rem(18) [];
+        margin-bottom: .px2rem(24) [];
+      }
+      .search-btn {
+        display: block;
+        padding: .px2rem(0) [] .px2rem(8) [];
+        height: 100%;
+        .ic-search {
+          display: inline-block;
+          width: .px2rem(21.525) [];
+          height: 100%;
+          background-image: url("~@/assets/bill/ic-search.svg");
+          background-repeat: no-repeat;
+          background-size: .px2rem(21.525) [];
+          background-position: center;
+        }
+      }
+      input::-webkit-input-placeholder {//webkit内核
+        font-size: .px2rem(18) [];
+      }
+    }
+    .subscriber-tips {
+      margin-top: .px2rem(80) [];
+      p {
+        font-size: .px2rem(13) [];
+        color: #888;
+        line-height: .px2rem(18) [];;
+      }
+    }
+    .subscriber-btn {
+      z-index: 10;
+      margin-top: .px2rem(42) [];
+      .confirm-btn{
+        padding: .px2rem(12) [] .px2rem(16) [];
+        font-size: .px2rem(17) [];
+        line-height: .px2rem(22) [];
+        height: auto;
+      }
     }
   }
 </style>

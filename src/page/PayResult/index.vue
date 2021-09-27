@@ -33,7 +33,7 @@ export default {
       return decodeURIComponent(url.getParam("goodsName"));
     },
     amount() {
-      return url.getParam("amount") * 10;
+      return url.getParam("amount") * 1;
     },
     orderNo() {
       return url.getParam("orderNo");

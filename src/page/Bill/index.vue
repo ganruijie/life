@@ -34,4 +34,7 @@ export default {
 </script>
 <style lang="less" scoped>
   @import "~@/assets/style/common.less";
+  .m-body {
+    margin-top: 0;
+  }
 </style>

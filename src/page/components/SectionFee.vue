@@ -59,7 +59,7 @@
         tag="button"
         class="confirm-btn"
         :disabled="isDisabled"
-      >{{ price | formatPrice(true) }}Rs Recharge</styled-button
+      >{{ price | formatPrice(true) }}Ks Recharge</styled-button
       >
     </footer>
   </form>
@@ -298,7 +298,7 @@ export default {
           },
           {
             goodsVOList: [
-              {activityDescption: "", goodsId: 2021091821, amount: 1000000, goodsName: "Top Up 1000 Ks", salePrice: 1100000, type: 2},
+              {activityDescption: "", goodsId: 2021091821, amount: 1000000, goodsName: "Top Up 1000 Ks", salePrice: 900000, type: 2},
               {activityDescption: "", goodsId: 2021091822, amount: 2000000, goodsName: "Top Up 2000 Ks", salePrice: 2000000, type: 2},
               {activityDescption: "", goodsId: 2021091823, amount: 3000000, goodsName: "Top Up 3000 Ks", salePrice: 2800000, type: 2},
             ],
@@ -306,8 +306,8 @@ export default {
           },
           {
             goodsVOList: [
-              {activityDescption: "hot", goodsId: 2021091815, amount: 1100000, goodsName: "Data Shal Thone Package(1GB)", salePrice: 1160000, type: 2, virtualGoodsType: 2},
-              {activityDescption: "", goodsId: 2021091816, amount: 2100000, goodsName: "Data Shal Thone Package(3GB)", salePrice: 2160000, type: 2, virtualGoodsType: 2},
+              {activityDescption: "hot", goodsId: 2021091815, amount: 1800000, goodsName: "Data Shal Thone Package(1GB)", salePrice: 1160000, type: 2, virtualGoodsType: 2},
+              {activityDescption: "", goodsId: 2021091816, amount: 2200000, goodsName: "Data Shal Thone Package(3GB)", salePrice: 2160000, type: 2, virtualGoodsType: 2},
             ], type: 2, title: "Choose Data Package"
           },
           {
