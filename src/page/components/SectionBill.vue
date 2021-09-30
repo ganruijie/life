@@ -18,21 +18,29 @@
             <div class="subscriber-input">
               <p class="input-title">Subscriber</p>
               <div class="input-box">
-                <input
-                  ref="input"
-                  name="subscriber"
-                  placeholder="Enter Your Electricity Bill"
-                  autocomplete="off"
-                  v-model="subscriberValue"
-                  maxlength="30">
+                <div class="input-content-subscriber">
+                  <input
+                    ref="input"
+                    name="subscriber"
+                    class="input-content-value"
+                    placeholder="Enter Your Electricity Bill"
+                    autocomplete="off"
+                    v-model="subscriberValue"
+                    maxlength="30">
+                </div>
                 <span 
                   type="submit"
                   @click="submitSubscriber"
                   class="search-btn"><i class="ic-search" /></span>
               </div>
             </div>
+            <div 
+              v-if="error"
+              class="err-tips">
+              <p>{{ error }}</p>
+            </div>
             <div class="subscriber-tips">
-              <p>How to check your Subscriber NO.?Find it on your Electricity Bill or call the customer service NO. 09369746932 to request.</p>
+              <p>How to check your Subscriber NO.?Find it on your Electricity Bill or call the customer service NO. 09369746932 or 24GH67854763-24GH67854768 to request.</p>
             </div>
           </div>
           <div class="subscriber-btn">
@@ -45,10 +53,78 @@
           </div>
         </form>
       </div>
-      <div v-else-if="subscriber && electricitySelect">
-        <div class="subscriber-bill">
-          <div>2222</div>
-        </div>
+      <div 
+        style="height:100%;display: flex;flex-direction: column;flex: 1;" 
+        v-else-if="subscriber && electricitySelect">
+        <form 
+          class="input-subscriber-bill" 
+          @submit.prevent="submitSubscriberBill">
+          <div class="page-content">
+            <div class="subscriber-bill">
+              <div class="bill-detail">
+                <div class="bill-detail-item">
+                  <p class="title">Amount</p>
+                  <p class="value">{{ electricityBill.amount | formatPrice(true) }}Ks</p>
+                </div>
+                <div class="bill-detail-item">
+                  <p class="title">Payment Status</p>
+                  <p class="value">{{ electricityBill.status === 1 
+                    ? "unpaid" : electricityBill.status === 2 
+                      ? "partly paid" : electricityBill.status === 3 
+                  ? "paid" : "--" }}</p>
+                </div>
+                <div class="bill-detail-item">
+                  <p class="title">Name of Subscriber</p>
+                  <p class="value">{{ electricityBill.name }}</p>
+                </div>
+                <div class="bill-detail-item">
+                  <p class="title">Payment unit</p>
+                  <p class="value">{{ electricityBill.title }}</p>
+                </div>
+                <div class="bill-detail-item">
+                  <p class="title">Subscriber NO</p>
+                  <p class="value">{{ electricityBill.orderNo }}</p>
+                </div>
+                <div class="bill-detail-item">
+                  <p class="title">Address of Subscriber</p>
+                  <p class="value">{{ electricityBill.address }}</p>
+                </div>
+                <div class="bill-detail-item">
+                  <p class="title">Consume Time</p>
+                  <p class="value">{{ electricityBill.time }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="divide-line" />
+            <div class="bill-input">
+              <p class="bill-input-title">Insert Amount</p>
+              <div class="bill-input-content">
+                <div class="bill-input-value">
+                  <input
+                    ref="billInput"
+                    class="bill-input-box"
+                    name="billInput"
+                    placeholder="Enter Payment Amount "
+                    autocomplete="off"
+                    v-model="billAmount">
+                </div>
+                <span class="input-ks">Ks</span>
+              </div>
+            </div>
+          </div>
+          <footer class="m-footer">
+            <styled-button
+              type="submit"
+              tag="button"
+              class="confirm-btn"
+              :disabled="isPayNow">Pay now</styled-button>
+            <styled-button
+              type="buttom"
+              tag="button"
+              @click="cancelFn"
+              class="confirm-btn">Cancel</styled-button>
+          </footer>
+        </form>
       </div>
       <!-- 输入Subscriber-->
       <div 
@@ -76,57 +152,7 @@
           </li>
         </ul>
       </div>
-      <div class="game-type-nav f-clearfix">
-        <div
-          v-for="item in chargeList"
-          :key="item.categoryId"
-          class="nav-item-box"
-        >
-          <a
-            class="nav-item"
-            href="javascript:;"
-            @click="severType = item.categoryId"
-            :class="{ selected: severType === item.categoryId }"
-          >
-            <span
-              v-if="item.activityDescption"
-              class="charge-item-icon"
-            >
-              {{ item.activityDescption }}
-            </span>
-            <div class="icon">
-              <img
-                :src="item.categoryIconUrl"
-                style="width: 100%; height: 100%;"
-              >
-            </div>
-            <span class="text">
-              {{ item.categoryName }}
-            </span>
-          </a>
-        </div>
-      </div>
       <!-- 输入Subscriber详情 -->
-      <div
-        v-if="chargeList && chargeList.length > 0"
-        @click="$refs.inputServe.input.focus();"
-        class="input-wrapper"
-      >
-        <AccountInput
-          ref="inputServe"
-          :type="2"
-          :value="accountNum"
-          :focused.sync="focused"
-          @input="accountInput($event)"
-          @change="accountChange"
-        />
-        <p
-          class="phone-num-tips"
-          :class="{ error: error }"
-        >
-          {{ error || "" }}
-        </p>
-      </div>
     </div>
   </form>
 </template>
@@ -139,7 +165,7 @@ import StyledButton from "@/components/StyledButton.vue";
 import ChargesAmountGroup from "./ChargesAmountGroup";
 import bridge from "@/modules/bridge";
 import { formatPrice } from "@/modules/formatter";
-import { computeSucc, getChargeData } from "@/modules/api";
+import { computeSucc, getChargeData, dispatchRecharge } from "@/modules/api";
 import { isAndroid } from "@/modules/env";
 import * as url from "@/modules/url";
 
@@ -165,8 +191,6 @@ export default {
     return {
       loading: true,
       mealList: [],
-      //充值种类
-      severType: undefined,
       chargeList: [],
       //请求数据参数
       reqToken: "",
@@ -187,14 +211,15 @@ export default {
       ],
       subscriberValue: null,
       bill: [
-        {orderNo: "24GH67854768", title: "Electricity Bill(Yangon)", amount: 980000, status: 1, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-        {orderNo: "8888888888", title: "Electricity Bill(Mandalay)", amount: 880000, status: 2, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-        {orderNo: "24GH67854767", title: "Electricity Bill(Ayeyarwaddy)", amount: 1080000, status: 3, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-        {orderNo: "24GH67854766", title: "Electricity Bill(Kayin)", amount: 960000, status: 1, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-        {orderNo: "24GH67854765", title: "Electricity Bill(NayPyiTaw)", amount: 970000, status: 2, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-        {orderNo: "24GH67854764", title: "Electricity Bill(Magwe)", amount: 990000, status: 3, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-        {orderNo: "24GH67854763", title: "SKYNET", amount: 120000, status: 1, name: "Myint Myat Aung", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
-      ]
+        {amount: 980000, status: 1, name: "Myint Myat Aung", orderNo: "09369746932", title: "Electricity Bill(Yangon)", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {amount: 880000, status: 2, name: "Myint Myat Aung", orderNo: "24GH67854763", title: "Electricity Bill(Mandalay)", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {amount: 1080000, status: 3, name: "Myint Myat Aung", orderNo: "24GH67854764", title: "Electricity Bill(Ayeyarwaddy)", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {amount: 960000, status: 1, name: "Myint Myat Aung", orderNo: "24GH67854765", title: "Electricity Bill(Kayin)", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {amount: 970000, status: 2, name: "Myint Myat Aung", orderNo: "24GH67854766", title: "Electricity Bill(NayPyiTaw)", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {amount: 990000, status: 3, name: "Myint Myat Aung", orderNo: "24GH67854767", title: "Electricity Bill(Magwe)", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+        {amount: 120000, status: 1, name: "Myint Myat Aung", orderNo: "24GH67854768", title: "SKYNET", address: "NO.24，Anawrahta Road,Yangon", time: "01/05/2021-31/05/2021"},
+      ],
+      billAmount: null
     };
   },
   watch: {
@@ -206,13 +231,11 @@ export default {
       },
       immediate: true,
     },
-    severType: {
-      handler: async function () {
-        this.$tips.showLoading();
-        this.mealList = await this.getChargeMeal() || [];
-        this.$tips.removeLoading();
-      },
-    },
+    subscriberValue: {
+      handler() {
+        this.error = "";
+      }
+    }
   },
   computed: {
     baseUrl() {
@@ -222,10 +245,10 @@ export default {
       return isAndroid();
     },
     /** @return {Boolean}*/
-    hasMeals() { // 是否存在充值套餐
+    hasMeals() { // 是否存在账单
       return (
-        this.validMeals.toString()
-        && this.validMeals.some(group => group.itemVOList.length !== 0)
+        this.subscriberValue
+        && this.bill.some(group => group.orderNo === `${this.subscriberValue}`.trim(""))
       );
     },
     //按钮是否可以点击
@@ -244,6 +267,12 @@ export default {
     electricityTitle() {
       let res =  this.electricity.find(item => `${item.id}` === this.electricitySelect);
       return (res && res["title"]) || "";
+    },
+    electricityBill() {
+      return this.bill.find(item => this.subscriber === item.orderNo);
+    },
+    isPayNow() {
+      return !this.billAmount || this.electricityBill.status === 3;
     }
   },
   methods: {
@@ -258,28 +287,7 @@ export default {
     //获取充值类型数据并处理
     async getData() {
       this.loading = true;
-      const data = await this.getChargesList();
-      this.setDataAfterGetList(data);
       this.loading = false;
-    },
-    //获取充值类型data
-    async getChargesList() {
-      try {
-        const params = {
-          osCode: this.osCode,
-          requestToken: this.reqToken,
-          requestPlainString: JSON.stringify({
-            constructor: constructorMap.CON_CHARGE_SEVER,
-          }),
-        };
-        const res = await computeSucc(getChargeData)(params);
-        return { res };
-      } catch (err) {
-        this.$tips.removeLoading();
-        this.$tips.showAlert({
-          text: err.errorMessage || msg[err.errorCode || code.NET_ERR]
-        });
-      }
     },
     /**
      * 选中electricity
@@ -289,79 +297,48 @@ export default {
     },
     // 输入完整Electricity Bill后提交
     submitSubscriber() {
-      if (this.isDisabled) {
-        return;
-      }
-      window.location.href = `${this.baseUrl}/bill.html?type=${this.electricitySelect}&subscriber=${this.subscriberValue}`;
-    },
-    /**
-     * 拉取列表数据后，对组件多个数据进行设置。
-     * */
-    setDataAfterGetList(data) {
-      if (!data || Object.keys(data).length === 0) {
-        return;
-      }
-      const {
-        res: { categoryVOList },
-      } = data;
-      this.chargeList = categoryVOList || [];
-      this.severType = this.severType || (this.chargeList[0] && this.chargeList[0].categoryId);
-      //拉取充值类型的列表后下面的充值种类设置为可点击
-    },
-    //请求对应的充值金额
-    async getChargeMeal() {
-      try {
-        const params = {
-          osCode: this.osCode,
-          requestToken: this.reqToken,
-          requestPlainString: JSON.stringify({
-            constructor: constructorMap.CON_CHARGE_MEALS,
-            categoryId: this.severType,
-          }),
-        };
-        const res = await computeSucc(getChargeData)(params);
-        return res.getVirtualGoodsItemVOList;
-      } catch (err) {
-        this.$tips.showAlert({
-          text: err.errorMessage || msg[err.errorCode || code.NET_ERR]
-        });
-        return null;
-      }
-    },
-    /**
-     * @param {String} value
-     * qq输入框的输入错误验证
-     * */
-    accountInput(value) {
-      if (this.accountNum === value) {
-        return;
-      }
-      this.accountNum = value;
       this.error = "";
-    },
-    //验证qq账号是否正确
-    accountChange(info) {
-      if (this.accountNum !== "" && this.accountNum !== undefined && info && !info.isValid) {
-        this.error = info.errMsg;
-        return null;
-      }
-    },
-    //充值提交
-    async submit() {
       if (this.isDisabled) {
         return;
       }
-      let params = {};
-      if (this.supportType == 7) {
-        params.paramsJsonStr = "";
-        params.orderGoodsType = "QQSERVICE";
+      if (this.hasMeals) {
+        window.location.href = `${this.baseUrl}/bill.html?type=${this.electricitySelect}&subscriber=${this.subscriberValue}`;
       } else {
-        params.orderGoodsType = "5";
+        this.error = "This Subscriber does not exist, Please check it is accurate and try again ";
       }
-      const str = `确定向QQ账号\n ${this.accountNum} 充值?`;
-      await this.$tips.showConfirm({text: str});
-      bridge.prepareToBuyRechargeGoods(params);
     },
+    /**
+     * 将bill单号，支付金额提交到后台，拉取支付窗口
+     */
+    async submitSubscriberBill() {
+      if (this.isPayNow) {
+        return;
+      }
+      let params = {
+        productName: this.electricityBill.title,
+        goodsId: this.electricityBill.orderNo,
+        amount: this.billAmount * 1000,
+        billAmount: this.electricityBill.amount,
+        address: this.electricityBill.address,
+        name: this.electricityBill.name,
+        status: this.electricityBill.status,
+        poundage: 0,
+      };
+      await computeSucc(dispatchRecharge)({params: JSON.stringify(params), version: 1, timestamp: +new Date()}).then(res => {
+        const { data } = res;
+        const str = `Please confirm purchase\n Confirm the Electricity Bill\nName:${params.name}\nAddress:${params.address}?`;
+        this.$tips.showConfirm({text: str}).then(() => {
+          bridge.getOrderReq(data).then(res => {
+            window.location.href = `${this.baseUrl}/pay-result.html?type=2&billAmount=${params.billAmount}&address=${params.address}&status=${params.status}&name=${params.name}&goodsId=${params.goodsId}&goodsName=${params.productName}&amount=${params.amount}&orderNo=${res}`;
+          });
+        });
+      }).finally(() => {
+
+      });
+    },
+    cancelFn() {
+      window.history.back(-1);
+    }
   },
   filters: {
     formatPrice: formatPrice
@@ -370,110 +347,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .game-charge-section {
-    /*padding-bottom: .px2rem(40) [];*/
-  }
-  .game-type-nav {
-    position: relative;
-    padding: .px2rem(15)[] .px2rem(22.5)[] 0;
-    .nav-item-box {
-      margin-bottom: .px2rem(15) [];
-      width: 25%;
-      float: left;
-      &:nth-of-type(4n+1) {
-        text-align: left;
-      }
-      &:nth-of-type(4n+2) {
-        text-align: center;
-        .nav-item {
-          margin-left: .px2rem(-11) [];
-        }
-      }
-      &:nth-of-type(4n+3) {
-        text-align: center;
-        .nav-item {
-          margin-right: .px2rem(-11) [];
-        }
-      }
-      &:nth-of-type(4n+4) {
-        text-align: right;
-      }
-      .nav-item {
-        line-height: 0;
-        display: inline-block;
-        position: relative;
-        text-align: center;
-        cursor: pointer;
-        position: relative;
-        padding-bottom: .px2rem(23)[];
-        .icon {
-          width: .px2rem(50) [];
-          height: .px2rem(50) [];
-          border: 1px solid @color-normal;
-          border-radius: .px2rem(4) [];
-          margin: 0 auto;
-        }
-        .text {
-          position: absolute;
-          left: 50%;
-          bottom: 0;
-          max-width: .px2rem(80) [];
-          transform: translateX(-50%);
-          white-space: nowrap;
-          color: @color-font-normal;
-          font-size: .px2rem(13)[];
-          line-height: .px2rem(16)[];
-          user-select: none;
-        }
-      }
-      .nav-item.selected {
-        .icon {
-          border: 1px solid @color-red;
-        }
-        .text {
-          color: @color-red;
-        }
-      }
-    }
-  }
-  .input-wrapper {
-    margin-top: .px2rem(20) [];
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    box-sizing: border-box;
-    flex: 1;
-    padding-left: .px2rem(12) [];
-    padding-bottom: .px2rem(5) [];
-    font-size: 0;
-  }
-  .phone-num-tips {
-    flex-basis: .px2rem(15) [];
-    line-height: .px2rem(15) [];
-    font-size: .px2rem(10) [];
-    color: #888;
-    &.error {
-      color: @color-red;
-    }
-  }
-  .charge-content {
-    // border-top: 1px solid #e6e6e6;
-    padding: .px2rem(20) [] .px2rem(12) [];
-    .bg-no-charges {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      margin-top: .px2rem(30) [];
-      height: .px2rem(100) [];
-      background: url("~@/assets/recharge/bg-no-recharge.png") no-repeat
-        center/.px2rem(100) [];
-    }
-    .text-no-charges {
-      font-size: 15px;
-      color: #999;
-      text-align: center;
-    }
-  }
   .bill-input-sub {
     padding: .px2rem(16) [];
   }
@@ -499,7 +372,7 @@ export default {
       .face-right {
         width: .px2rem(14) [];
         height: .px2rem(24) [];
-        background-image: url(~@/assets/bill/arrow-right.svg);
+        background-image: url("~@/assets/bill/arrow-right.svg");
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -516,7 +389,7 @@ export default {
         left: 0;
         height: .px2rem(260) [];
         width: 100vw;
-        background: linear-gradient(141deg, #6E3DF9 0%, #623CF8 100%);
+        background: linear-gradient(141deg, #5761B5 0%, #5761B5 100%);
         border-radius: 0 0 .px2rem(30) [] .px2rem(30) [];
       }
     }
@@ -542,12 +415,33 @@ export default {
     }
     .subscriber-input {
       .input-box {
+        position: relative;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: .px2rem(4) [];
-        border-bottom: 1px solid #E6E6E6;
-        height: .px2rem(26) [];
+        height: .px2rem(24) [];
+        .f-divide-line(@color:#E6E6E6);
+        padding-bottom: .px2rem(6) [];
+      }
+      .input-content-subscriber {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        flex: 1;
+        font-size: 0;
+      }
+      .input-content-value {
+        flex-basis: .px2rem(22) [];
+        font-size: .px2rem(22) [];
+        line-height: .px2rem(24) [];
+        font-weight: 600;
+        .f-sf-pro-text-medium();
+        &::placeholder {
+          line-height: .px2rem(18) [];
+          font-size: .px2rem(18) [];
+          color: #999;
+          .f-pingfang-regular();
+          font-weight: normal;
+        }
       }
       .input-title {
         font-size: .px2rem(14) [];
@@ -559,13 +453,14 @@ export default {
         display: block;
         padding: .px2rem(0) [] .px2rem(8) [];
         height: 100%;
+        line-height: .px2rem(24) [];;
         .ic-search {
           display: inline-block;
           width: .px2rem(21.525) [];
           height: 100%;
           background-image: url("~@/assets/bill/ic-search.svg");
           background-repeat: no-repeat;
-          background-size: .px2rem(21.525) [];
+          background-size: .px2rem(21.525) [] .px2rem(24) [];
           background-position: center;
         }
       }
@@ -590,6 +485,111 @@ export default {
         line-height: .px2rem(22) [];
         height: auto;
       }
+    }
+  }
+  .input-subscriber-bill {
+    padding: 0 .px2rem(16) [];
+    .subscriber-bill {
+      padding: .px2rem(26) [] 0;
+    }
+    .bill-detail-item {
+      display: flex;
+      padding: .px2rem(6) [];
+      p {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        flex: 1;
+        font-size: .px2rem(14) [];
+        line-height: .px2rem(16) [];
+      }
+      .title {
+        color: #888;
+      }
+      .value {
+        color: #191919;
+      }
+    }
+    .divide-line {
+      position: relative;
+      .f-divide-line(@color:#E6E6E6)
+    }
+    .bill-input {
+      margin-top: .px2rem(24) [];
+      .bill-input-title {
+        font-size: .px2rem(14) [];
+        line-height: .px2rem(18) [];
+        color: #333333;
+        margin-bottom: .px2rem(30) [];
+      }
+      .bill-input-content {
+        position: relative;
+        display: flex;
+        .f-divide-line(@color:#E6E6E6);
+        height: .px2rem(24) [];
+        padding-bottom: .px2rem(6) [];
+      }
+      .bill-input-value {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        flex: 1;
+        font-size: 0;
+      }
+      .bill-input-box {
+        flex-basis: .px2rem(22) [];
+        font-size: .px2rem(22) [];
+        line-height: .px2rem(24) [];
+        font-weight: 600;
+        .f-sf-pro-text-medium();
+        &::placeholder {
+          line-height: .px2rem(18) [];
+          font-size: .px2rem(18) [];
+          color: #999;
+          .f-pingfang-regular();
+          font-weight: normal;
+        }
+      }
+      .input-ks {
+        font-size: .px2rem(18) [];
+        display: block;
+        height: 100%;
+        line-height: .px2rem(24) [];;
+      }
+      input::-webkit-input-placeholder {//webkit内核
+        font-size: .px2rem(18) [];
+      }
+    }
+  }
+  .m-footer {
+    /*position: fixed;*/
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /*height: .px2rem(53.5) [];*/
+    box-sizing: border-box;
+    padding: 0 0 .px2rem(20) [];
+    background: white;
+    font-size: 0;
+    user-select: none;
+    .confirm-btn {
+      .f-pingfang-semibold();
+      line-height: .px2rem(44) [];
+      height: .px2rem(44) [];
+      font-size: .px2rem(17) [];
+    }
+    .styled-button+.styled-button {
+      margin-top: .px2rem(16) [];
+    }
+  }
+  .err-tips {
+    padding-top: .px2rem(8) [];
+    p {
+      font-size: .px2rem(14) [];
+      color: #F02E45;
+      line-height: .px2rem(16) [];
     }
   }
 </style>

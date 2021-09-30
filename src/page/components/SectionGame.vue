@@ -5,109 +5,128 @@
   >
     <!-- 阻止表单提交，避免在输入框里回车时触发提交方法 -->
     <div class="page-content">
-      <div class="game-type-nav f-clearfix">
-        <div
-          v-for="item in chargeList"
-          :key="item.categoryId"
-          class="nav-item-box"
-        >
-          <div v-if="item.showFlag">
-            <a
+      <div 
+        v-if="!itemId"
+        class="game-type">
+        <div 
+          v-if="chargeList && chargeList.length"
+          class="game-type-nav f-clearfix">
+          <div
+            v-for="item in chargeList"
+            :key="item.id"
+            class="nav-item-box">
+            <div
               class="nav-item"
-              href="javascript:;"
-              @click="gameType = item.categoryId"
-              :class="{ selected: gameType === item.categoryId }"
-            >
-              <span 
-                v-if="item.activityDescption"
-                class="charge-item-icon"
-              >
-                {{ item.activityDescption }}
-              </span>
+              @click="selectItem(item.id)"
+              :class="{ selected: gameType === item.id }">
               <div class="icon">
                 <img
-                  :src="item.categoryIconUrl"
-                  style="width: 100%; height: 100%;"
-                >
+                  class="icon-img"
+                  :src="item.imgUrl">
               </div>
-              <span class="text">
-                {{ item.categoryName }}
-              </span>
-            </a>
+              <div class="nav-item-content">
+                <p class="text">
+                  {{ item.title }}
+                </p>
+                <p 
+                  v-if="item.subtitle"
+                  class="charge-item-subtitle"
+                >
+                  {{ item.subtitle }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="divide-line" />
-      <div
-        v-if="chargeList && chargeList.length > 0"
-        @click="$refs.inputGame.input.focus();"
-        class="input-wrapper"
-      >
-        <AccountInput
-          ref="inputGame"
-          :type="accountIptType"
-          :value="accountNum"
-          :focused.sync="focused"
-          @input="accountInput($event)"
-          @change="accountChange"
-        />
-        <p
-          class="phone-num-tips"
-          :class="{ error: error }"
-        >
-          {{ error || "" }}
-        </p>
-      </div>
-      <div 
-        class="district-wrapper" 
-        v-if="selectDistrictShow">
-        <span class="district-title">游戏分区</span>
-        <div 
-          class="district-select" 
-          @click="districtDialogShow=true">
-          <span v-if="!selectDistrictType">{{ selectedData.firstGameName }}</span>
-          <span v-else>{{ selectedData.secondGameName }}</span>
-          <i class="select-icon"/>
-        </div>
-      </div>
-      <div 
-        class="recharge-wrapper"
-        v-if="selectChargeTypeShow"
-      >
-        <div class="recharge-title">充值类型</div>
-        <div class="recharge-type">
-          <charges-amount-group
-            :is-server-valid="isChargeTypeValid"
-            v-for="(group, index) in chargeItemList"
-            :key="index"
-            :charge-type="3"
-            @input="data => (selectedTypeMeal = data)"
-            v-model="selectedTypeMeal"
-            :group="group"
-          />
-        </div>
-      </div>
-      <div
-        v-if="!loading"
-        class="charge-content"
-      >
-        <template v-if="hasMeals">
-          <ChargesAmountGroup
-            :is-server-valid="isServerValid"
-            v-for="(group, index) in validMeals"
-            :key="index"
-            :show-title="validMeals.length > 1"
-            @input="data => selectedMeal = data"
-            v-model="selectedMeal"
-            :group="group"
-          />
-        </template>
-        <template v-else>
+        <div v-else>
           <div class="bg-no-charges" />
           <p class="text-no-charges">
             暂无充值套餐
           </p>
-        </template>
+        </div>
+      </div>
+      <div
+        class="m-abstract"
+        v-else>
+        <div class="top-carousel abstract-swiper-wrapper">
+          <swiper
+            key="test"
+            ref="mySwiper"
+            :options="swiperOptions"
+            class="abstract-carousel-container"
+            @tap="showPic(info.goodsPhotoUrlList, swiper.realIndex);"
+          >
+            <swiper-slide
+              v-for="(photoSrc, index) in itemList && itemList.imgList"
+              :key="photoSrc"
+              class="abstract-slide-wrapper"
+            >
+              <img
+                :src="photoSrc"
+                :alt="`goodImg${index}`"
+                :style="{width: '100vw', height:'100%'}"
+              >
+            </swiper-slide>
+            <template v-slot:pagination>
+              <div
+                class="swiper-pagination">
+                <span
+                  class="swiper-pagination-text"
+                >{{ swiperPagination.current }}/{{
+                  swiperPagination.total
+                }}</span
+                >
+              </div>
+            </template>
+          </swiper>
+        </div>
+        <div class="item-title">
+          <p>{{ itemList && itemList.title }}</p>
+        </div>
+        <div class="item-list">
+          <ul class="charges-amount-list">
+            <li
+              class="charge-item-full"
+              v-for="(ele, index) in itemList && itemList.list"
+              :key="index">
+              <form-radio
+                name="game"
+                class="charge-item-radio"
+                :btn-class="'radio-item-btn'"
+                :value="selectGame ? selectGame.goodsId : null"
+                @input="selectGameItem($event, ele)"
+                :val-code="ele.goodsId">
+                <div
+                  class="value-wrapper">
+                  <template>
+                    <div class="data-package">
+                      <p class="face-value data-package-item">{{ ele.title }}</p>
+                      <p class="sale-price data-package-item">{{ ele.amount | formatPrice(false) }}(-{{ ele.discount | formatPrice(false) }}Ks)</p>
+                    </div>
+                  </template>
+                </div>
+              </form-radio>
+            </li>
+          </ul>
+        </div>
+        <div
+          @click="$refs.inputGame.input.focus();"
+          class="input-wrapper"
+        >
+          <AccountInput
+            ref="inputGame"
+            :value="accountNum"
+            :focused.sync="focused"
+            @input="accountInput($event)"
+            @change="accountChange"
+          />
+          <p
+            class="phone-num-tips"
+            :class="{ error: error }"
+          >
+            {{ error || "" }}
+          </p>
+        </div>
       </div>
     </div>
     <footer
@@ -115,26 +134,13 @@
       class="m-footer"
     >
       <StyledButton
-        v-show="hasMeals"
         type="button"
         @click="submit"
         tag="button"
         class="confirm-btn"
         :disabled="isDisabled"
-      >
-        ¥{{ price | formatPrice(true) }}立即充值
-      </StyledButton>
+      >Next</StyledButton>
     </footer>
-    <!-- 选择游戏区服 -->
-    <popup :show.sync="districtDialogShow">
-      <select-district-popup
-        :item-data="selectDistrictList"
-        :select-type="selectDistrictType? '2': '1'"
-        :selected-data.sync="selectedData"
-        :show="districtDialogShow"
-        @hidePopup="districtDialogShow = false"
-      />
-    </popup>
   </form>
 </template>
 
@@ -148,7 +154,15 @@ import { formatPrice } from "@/modules/formatter";
 import { computeSucc, getChargeData } from "@/modules/api";
 import { isAndroid } from "@/modules/env";
 import Popup from "@/components/Popup";
-import SelectDistrictPopup from "./SelectDistrictPopup";
+import * as url from "@/modules/url";
+import "swiper/dist/css/swiper.css";
+import { swiper, swiperSlide } from "@/modules/library/vueAwesomeSwiper";
+import FormRadio from "@/components/form/FormRadio.vue";
+
+const img1 = require("@/assets/giftCard/1.jpg");
+const img2 = require("@/assets/giftCard/2.jpg");
+const img3 = require("@/assets/giftCard/3.jpg");
+const img4 = require("@/assets/giftCard/4.jpg");
 
 export default {
   name: "SectionGame",
@@ -156,8 +170,10 @@ export default {
     AccountInput,
     StyledButton,
     ChargesAmountGroup,
-    SelectDistrictPopup,
-    Popup
+    Popup,
+    swiper,
+    swiperSlide,
+    FormRadio
   },
   props: {
     precondition: {
@@ -167,6 +183,10 @@ export default {
     supportType: {
       type: [Number, String],
       default: null,
+    },
+    chargeType: {
+      type: [Number, String],
+      default: 1,
     }
   },
   data() {
@@ -175,11 +195,11 @@ export default {
       tencentIds,
       loading: true,
       mealList: [],
+      chargeList: [],
       isServerValid: false,
       selectedMeal: null,
       //充值种类
       gameType: undefined,
-      chargeList: [],
       //请求数据参数
       reqToken: "",
       osCode: "",
@@ -206,6 +226,25 @@ export default {
       selectedTypeMeal: null,
       chargeItemList: [],
       isChargeTypeValid: false,
+      swiperOptions: {
+        loop: true,
+        wrapperClass: "abstract-carousel-wrapper",
+        speed: 200,
+        pagination: {
+          el: ".swiper-pagination",
+          type: "custom",
+          renderCustom: (swiper, current, total) => {
+            console.log(current, total);
+            this.swiperPagination.current = current;
+            this.swiperPagination.total = total;
+          }
+        }
+      },
+      swiperPagination: {
+        current: 0,
+        total: 0
+      },
+      selectGame: null
     };
   },
   watch: {
@@ -218,31 +257,24 @@ export default {
       immediate: true,
     },
     gameType: {
-      handler: async function () {
-        this.$tips.showLoading();
-        this.mealList = await this.getChargeMeal() || [];
-        this.setDistrictData(this.mealList[0]);
-        this.setChargeTypeData(this.mealList[0]);
-        this.$tips.removeLoading();
+      handler() {
+
       },
     },
+    chargeType: {
+      handler(val) {
+        if (val) {
+          this.init();
+        }
+      }
+    }
   },
   computed: {
+    baseUrl() {
+      return process.env.BASE_URL;
+    },
     isAndroid() {
       return isAndroid();
-    },
-    //返回充值套餐数组
-    validMeals() {
-      const arr = this.mealList.filter(ele => ele.itemVOList.length);
-      this.selectedMeal = arr.length > 0 ? arr[0].itemVOList && arr[0].itemVOList[0] : null;
-      return arr;
-    },
-    /** @return {Boolean}*/
-    hasMeals() { // 是否存在充值套餐
-      return (
-        this.validMeals.toString()
-        && this.validMeals.some(group => group.itemVOList.length !== 0)
-      );
     },
     //充值按钮是否可以点击
     isDisabled() {
@@ -255,9 +287,12 @@ export default {
     price() {
       return (this.selectedMeal && this.selectedMeal.salePrice) || 0;
     },
-    accountIptType() { // 腾讯系充值账号为 qq，其它为邮箱
-      return this.tencentIds.includes(this.gameType) ? 2 : 3;
-    }
+    itemId() {
+      return url.getParam("itemId");
+    },
+    itemList() {
+      return this.chargeList.find(item => `${item.id}` === this.itemId);
+    },
   },
   methods: {
     //token改变加载页面数据设置请求参数
@@ -271,93 +306,175 @@ export default {
     //获取充值类型数据并处理
     async getData() {
       this.loading = true;
-      const data = await this.getChargesList();
-      this.setDataAfterGetList(data);
+      await this.getChargesList().then(res => {
+        let { itemVOList } = res;
+        this.chargeList = [...itemVOList];
+      }).finally(() => {
+        this.$tips.removeLoading();
+      });
       this.loading = false;
     },
     //获取充值类型data
     async getChargesList() {
       try {
-        const params = {
-          osCode: this.osCode,
-          requestToken: this.reqToken,
-          requestPlainString: JSON.stringify({
-            constructor: constructorMap.CON_CHARGE_GAME,
-          }),
-        };
-        const res = await computeSucc(getChargeData)(params);
-        return { res };
+        return new Promise((resolve) => {
+          let result = [
+            {categoryId: 11, title: "Discount", itemVOList: [
+              {id: 2021092911, title: "PES 2020(SGD)", subtitle: "PES 2021 subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ] },
+              {id: 2021092912, title: "PES 2020", subtitle: "PES 2022 subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092913, title: "PES 2020", subtitle: "PES 2023 subtitle", imgUrl: img3, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092914, title: "PES 2020", subtitle: "PES 2024 subtitle", imgUrl: img4, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092915, title: "PES 2020", subtitle: "PES 2025 subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092916, title: "PES 2020", subtitle: "PES 2026 subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092917, title: "PES 2020", subtitle: "PES 2027 subtitle", imgUrl: img3, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092918, title: "PES 2020", subtitle: "PES 2028 subtitle", imgUrl: img4, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092919, title: "PES 2020", subtitle: "PES 2029 subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+              {id: 2021092910, title: "PES 2020", subtitle: "PES 2020 subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
+                {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
+                {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
+                {goodsId: 202109291114, discount: 266000, amount:  288000, title: "5SGD" },
+              ]  },
+            ]},
+            {
+              categoryId: 12, title: "Normal", itemVOList: [
+                {id: 2021092911, title: "PES 2020", subtitle: "PES 2020 normal subtitle", imgUrl: img4, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]  },
+                {id: 2021092912, title: "PES 2021", subtitle: "PES 2020 normal subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092913, title: "PES 2022", subtitle: "PES 2020 normal subtitle", imgUrl: img3, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092914, title: "PES 2023", subtitle: "PES 2020 normal subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092915, title: "PES 2024", subtitle: "PES 2020 normal subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092916, title: "PES 2025", subtitle: "PES 2020 normal subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092917, title: "PES 2026", subtitle: "PES 2020 normal subtitle", imgUrl: img3, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092918, title: "PES 2027", subtitle: "PES 2020 normal subtitle", imgUrl: img4, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092919, title: "PES 2028", subtitle: "PES 2020 normal subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+                {id: 2021092910, title: "PES 2029", subtitle: "PES 2020 normal subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                ]   },
+              ]
+            }
+          ];
+          let res = result.find(item => item.categoryId === this.chargeType);
+          resolve(res);
+        });
       } catch (err) {
         this.$tips.removeLoading();
         this.$tips.showAlert({
           text: err.errorMessage || msg[err.errorCode || code.NET_ERR]
         });
       }
-    },
-    /**
-     * 拉取列表数据后，对组件多个数据进行设置。
-     * */
-    setDataAfterGetList(data) {
-      if (!data || Object.keys(data).length === 0) {
-        return;
-      }
-      const {
-        res: { categoryVOList },
-      } = data;
-      this.chargeList = categoryVOList || [];
-      //6以前的版本都不要显示lol点券和cf点券
-      if (this.chargeList.length !== 0) {
-        this.chargeList.forEach(v => {
-          //小于6的版本只显示q币和dnf
-          if (this.supportType < 6) {
-            if (v.categoryId === 1 || v.categoryId === 2) {
-              v.showFlag = true;
-            } else {
-              v.showFlag = false;
-            }
-          }
-          //等于6的版本显示lol和cf
-          if (this.supportType == 6) {
-            if (v.categoryId === 1 || v.categoryId === 2 || v.categoryId === 9 || v.categoryId === 10) {
-              v.showFlag = true;
-            } else {
-              v.showFlag = false;
-            }
-          }
-          //等于7的版本都显示
-          if (this.supportType == 7) {
-            v.showFlag = true;
-          }
-        });
-      }
-      this.gameType = this.gameType || (this.chargeList[0] && this.chargeList[0].categoryId);
-      //拉取充值类型的列表后下面的充值种类设置为可点击
-      this.isServerValid = true;
-    },
-    //设置分区相关
-    setDistrictData(data) {
-      if (!data || Object.keys(data).length === 0) {
-        this.selectDistrictShow = false;
-        return;
-      }
-      const gameList = data.gameList;
-      if (gameList) {
-        this.selectDistrictList = gameList;
-        this.selectedData.firstGameId = gameList[0].gameId;
-        this.selectedData.firstGameName = gameList[0].gameName;
-        this.selectDistrictType = gameList.some(v => {
-          return v.sonCategories && v.sonCategories.length !== 0;
-        });
-        if (this.selectDistrictType) {
-          this.selectedData.secondGameId = gameList[0].sonCategories[0].gameId;
-          this.selectedData.secondGameName = gameList[0].sonCategories[0].gameName;
-        }
-        this.selectDistrictShow = true;
-      } else {
-        this.selectDistrictType = false;
-        this.selectDistrictShow = false;
-      }
-      this.isChargeTypeValid = true;
     },
     //设置充值类型
     setChargeTypeData(data) {
@@ -384,25 +501,12 @@ export default {
         this.selectChargeTypeShow = false;
       }
     },
-    //请求对应的充值金额
-    async getChargeMeal() {
-      try {
-        const params = {
-          osCode: this.osCode,
-          requestToken: this.reqToken,
-          requestPlainString: JSON.stringify({
-            constructor: constructorMap.CON_CHARGE_MEALS,
-            categoryId: this.gameType,
-          }),
-        };
-        const res = await computeSucc(getChargeData)(params);
-        return res.getVirtualGoodsItemVOList;
-      } catch (err) {
-        this.$tips.showAlert({
-          text: err.errorMessage || msg[err.errorCode || code.NET_ERR]
-        });
-        return null;
-      }
+    /**
+     * 选中项目
+    */
+    selectItem(id) {
+      this.gameType = id;
+      window.location.href = `${this.baseUrl}/giftcard.html?itemId=${id}`;
     },
     /**
      * @param {String} value
@@ -421,6 +525,17 @@ export default {
         this.error = info.errMsg;
         return null;
       }
+    },
+    //调用客户端api，全屏显示商品大图
+    showPic(list, current) {
+      // bridge.showPic({
+      //   list: list,
+      //   current: current
+      // });
+    },
+    selectGameItem(goodsId, item) {
+      console.log(item, "itemitem");
+      this.selectGame = item;
     },
     //充值提交
     async submit() {
@@ -479,57 +594,71 @@ export default {
   .game-charge-section {
     /*padding-bottom: .px2rem(40) [];*/
   }
+  .game-type {
+    padding: 0 .px2rem(20) [];
+  }
   .game-type-nav {
     position: relative;
-    padding: .px2rem(15)[] .px2rem(22.5)[] 0;
+    margin: 0 .px2rem(-10)[];
+    box-sizing: border-box;
     .nav-item-box {
+      box-sizing: border-box;
       margin-bottom: .px2rem(15) [];
-      width: 25%;
+      width: calc(100%/2);
       float: left;
-      &:nth-of-type(4n+1) {
-        text-align: left;
-      }
-      &:nth-of-type(4n+2) {
-        text-align: center;
-        .nav-item {
-          margin-left: .px2rem(-11) [];
-        }
-      }
-      &:nth-of-type(4n+3) {
-        text-align: center;
-        .nav-item {
-          margin-right: .px2rem(-11) [];
-        }
-      }
-      &:nth-of-type(4n+4) {
-        text-align: right;
-      }
+      padding: 0 .px2rem(10)[];
       .nav-item {
-        line-height: 0;
         display: inline-block;
         position: relative;
         text-align: center;
         cursor: pointer;
         position: relative;
-        padding-bottom: .px2rem(23)[];
+        padding-bottom: .px2rem(16)[];
+        .nav-item-content {
+          margin: 0 .px2rem(10)[];
+          text-align: left;
+          margin-top: .px2rem(5)[];
+        }
         .icon {
-          width: .px2rem(50) [];
-          height: .px2rem(50) [];
           border: 1px solid @color-normal;
-          border-radius: .px2rem(4) [];
+          border-radius: .px2rem(8) [];
           margin: 0 auto;
+          height: .px2rem(148) [];
+          .icon-img {
+            height: 100%;
+            width: 100%;
+            object-fit: fill;
+            border-radius: .px2rem(8) [];
+          }
         }
         .text {
-          position: absolute;
-          left: 50%;
-          bottom: 0;
-          max-width: .px2rem(80) [];
-          transform: translateX(-50%);
           white-space: nowrap;
           color: @color-font-normal;
           font-size: .px2rem(13)[];
-          line-height: .px2rem(16)[];
+          line-height: .px2rem(20)[];
           user-select: none;
+          font-weight: bold;
+        }
+        .charge-item-amount {
+          line-height: .px2rem(20)[];
+        }
+        .discount {
+          display: inline-block;
+          background-color: #FF6E66;
+          font-size: .px2rem(10)[];
+          color: #fff;
+          height: .px2rem(10)[];
+          line-height: .px2rem(10)[];
+          border-radius: .px2rem(2)[];
+          padding: .px2rem(3)[] .px2rem(6)[];
+          margin-right: .px2rem(6)[];
+        }
+        .amount {
+          display: inline-block;
+          line-height: .px2rem(20)[];
+          color: #000;
+          font-size: .px2rem(11)[];
+          font-weight: bold;
         }
       }
       .nav-item.selected {
@@ -661,27 +790,171 @@ export default {
       font-size: .px2rem(17) [];
     }
   }
-  .charge-item-icon {
-    position: absolute;
-    top: .px2rem(-10) [];
-    right: .px2rem(-10) [];
-    width: .px2rem(26) [];
-    height: .px2rem(14) [];
-    line-height: .px2rem(16) [];
-    background-color: #F23030;
-    border-radius: .px2rem(3.5) [] .px2rem(3.5) [] .px2rem(3.5) [] 0;
-    color: #FFFFFF;
+  .charge-item-subtitle {
+    line-height: .px2rem(20) [];
+    color: #8F92A1;
     font-family: PingFangHK-Regular;
-    font-size: .px2rem(10) [];
+    font-size: .px2rem(9) [];
   }
-  .charge-item-icon:after {
-    content: " ";
-    width: 0;
-    height: 0;
-    top: .px2rem(14) [];
-    right: .px2rem(23) [];
-    position: absolute;
-    border-right: .px2rem(3) [] solid transparent;
-    border-top: .px2rem(2) [] solid @color-red;
+  .m-abstract {
+    padding: 0;
+    margin: 0;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vw;
+    .f-flex-column-100per-H() {
+      display: flex;
+      flex-direction: row;
+      height: auto;
+    }
+    .abstract-swiper-wrapper {
+      display: flex;
+      flex: 1;
+      background: #f5f5f5;
+    }
+    //第三方轮播图组件样式覆盖
+    .abstract-carousel-container {
+      flex: 1;
+      z-index: initial;
+      height: 100%;
+      .abstract-carousel-wrapper {
+        display: flex;
+        transition-timing-function: ease-in-out;
+        transition-property: transform;
+        height: 100%;
+      }
+
+      .abstract-slide-wrapper {
+        align-items: stretch;
+        height: 100%;
+      }
+    }
+    .swiper-pagination {
+      position: absolute;
+      left: initial;
+      bottom: .px2rem(12) [];
+      right: .px2rem(12) [];
+      padding: .px2rem(3) [] .px2rem(9) [];
+      font-size: 0;
+      color: white;
+      height: .px2rem(20) [];
+      width: auto;
+      box-sizing: border-box;
+      background: #b2b2b2;
+      border-radius: .px2rem(50) [];
+      z-index: auto;
+      .swiper-pagination-text {
+        font-size: .px2rem(11) [];
+        line-height: .px2rem(15) [];
+      }
+    }
+    .abstract-price-line {
+      .f-sf-pro-text-semibold();
+      box-sizing: border-box;
+      padding: .px2rem(6) [] .px2rem(12) [];
+      background: white;
+      .promote-activity-price-label {
+        vertical-align: middle;
+        margin-right: .px2rem(5) [];
+        padding: .px2rem(2) [] .px2rem(5) [];
+        height: .px2rem(19) [];
+        background: @color-red;
+        border-radius: .px2rem(1) [];
+        font-size: 12px;
+        color: white;
+      }
+      .tag-price {
+        vertical-align: middle;
+        margin-left: .px2rem(3.5) [];
+        .f-sf-pro-text-regular();
+        font-size: 13px;
+        color: #888;
+      }
+    }
+    .item-title {
+      padding: .px2rem(20) [] 0;
+      p {
+        color: #9795A4;
+        font-size: .px2rem(14) [];
+        line-height: .px2rem(22) [];
+        text-align: center;
+      }
+    }
+    .item-list {
+      padding: 0 .px2rem(16) [];
+      .charges-amount-list {
+        margin: .px2rem(-10) [] .px2rem(-10) [] 0;
+      }
+      .charge-item {
+        display: inline-block;
+        vertical-align: bottom;
+        width: calc(100%/3);
+        box-sizing: border-box;
+        padding: 0 .px2rem(10) [];
+        margin-top: .px2rem(10) [];
+        position: relative;
+      }
+      .charge-item-full {
+        display: inline-block;
+        vertical-align: bottom;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 .px2rem(10) [];
+        margin-top: .px2rem(10) [];
+        position: relative;
+      }
+      .charge-item-radio {
+        display: block;
+        width: 100%;
+        height: .px2rem(48) [];
+        .radio-item-btn {
+          width: 100%;
+          height: .px2rem(48) [];
+          border-radius: .px2rem(6) [];
+          border: 1px solid #d9d9d9;
+          &[checked] {
+            background: #ffffff;
+            color: @color-select;
+            border: 1px solid @color-select;
+          }
+          &[disabled]{
+            color: #AAA;
+          }
+        }
+      }
+      .data-package {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .data-package-item {
+          margin: 0px !important;
+        }
+      }
+      .value-wrapper{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        .face-value {
+          [disabled] &{
+            margin: 0;
+          }
+          margin-top: .px2rem(9) [];
+          line-height: .px2rem(20) [];
+          font-size: .px2rem(14) [];
+          white-space: nowrap;
+          .f-sf-pro-text-semibold();
+        }
+        .sale-price {
+          vertical-align: middle;
+          font-size: .px2rem(14) [];
+          line-height: .px2rem(20) [];
+          color: #626262;
+          word-break: break-all;
+        }
+      }
+    }
   }
+
 </style>

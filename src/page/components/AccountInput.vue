@@ -177,10 +177,12 @@ export default {
      * input blur时的处理函数
      * */
     blurHandler() {
-      if (!this.isAndroid) { // 安卓时键盘回收时有 $emit 逻辑
-        this.$emit("update:focused", false);
-        this.$emit("change", { isValid: this.accountNumIsClientValid, errMsg: this.errMsg });
-      }
+      // if (!this.isAndroid) { // 安卓时键盘回收时有 $emit 逻辑
+      //   this.$emit("update:focused", false);
+      //   this.$emit("change", { isValid: this.accountNumIsClientValid, errMsg: this.errMsg });
+      // }
+      this.$emit("update:focused", false);
+      this.$emit("change", { isValid: this.accountNumIsClientValid, errMsg: this.errMsg });
     },
     deleteHandler({ target }) {
       const { selectionStart, selectionEnd } = target;

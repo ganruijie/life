@@ -12,14 +12,57 @@
       </div>
       <div class="success-content">
         <div class="title">
-          <h3 class="name">MPT</h3>
+          <h3 class="name">{{ type === '1' ? 'MPT' : type === '2' ? 'Electricity Bill' : '--' }}</h3>
           <h3 class="pay-amount">{{ amount | formatPrice(true) }}<span class="ks">Ks</span></h3>
-          <p class="pay-goods-name">{{ goodsName }}</p>
+          <p 
+            v-if="type === '1'" 
+            class="pay-goods-name">{{ goodsName }}</p>
+        </div>
+      </div>
+      <div 
+        v-if="type === '2'" 
+        class="electricity-bill-detail">
+        <div class="subscriber-bill">
+          <div class="bill-detail">
+            <div class="bill-detail-item">
+              <p class="title">Amount</p>
+              <p class="value">{{ billAmount | formatPrice(true) }}Ks</p>
+            </div>
+            <div class="bill-detail-item">
+              <p class="title">Payment Status</p>
+              <p class="value">{{ status === '1' 
+                ? "unpaid" : status === '2' 
+                  ? "partly paid" : status === '3' 
+              ? "paid" : "--" }}</p>
+            </div>
+            <div class="bill-detail-item">
+              <p class="title">Name of Subscriber</p>
+              <p class="value">{{ name }}</p>
+            </div>
+            <div class="bill-detail-item">
+              <p class="title">Payment unit</p>
+              <p class="value">{{ goodsName }}</p>
+            </div>
+            <div class="bill-detail-item">
+              <p class="title">Subscriber NO</p>
+              <p class="value">{{ goodsId }}</p>
+            </div>
+            <div class="bill-detail-item">
+              <p class="title">Address of Subscriber</p>
+              <p class="value">{{ address }}</p>
+            </div>
+          </div>
         </div>
       </div>
     </main>
+    <div>
+      <p style="font-size:14px;">
+        <a href="/bill.html">Bill Payment </a>
+      </p>
+    </div>
     <div class="footer">
       <p v-if="type === '1'">* The Top Up transaction is generally completed within 30 mins after it has been sent.</p>
+      <p v-if="type === '2'">* The  transaction is generally completed within 3 days after it has been sent.</p>
     </div>
   </div>
 </template>
@@ -40,7 +83,22 @@ export default {
     },
     type() {
       return url.getParam("type");
-    }
+    },
+    billAmount() {
+      return url.getParam("billAmount");
+    },
+    address() {
+      return decodeURIComponent(url.getParam("address"));
+    },
+    status() {
+      return url.getParam("status");
+    },
+    name() {
+      return decodeURIComponent(url.getParam("name"));
+    },
+    goodsId() {
+      return url.getParam("goodsId");
+    },
   },
   filters: {
     formatPrice: formatPrice
@@ -52,6 +110,7 @@ export default {
 .pay-result {
   position: relative;
   height: 100vh;
+  padding: 0 .px2rem(16) [];
   .m-body {
     margin: 0;
     flex: 1;
@@ -104,12 +163,40 @@ export default {
       }
     }
   }
+  .electricity-bill-detail {
+    margin-top: .px2rem(24) [];
+    position: relative;
+    .f-divide-line(@color:#E6E6E6, @direction: top,);
+    .subscriber-bill {
+      padding: .px2rem(24) [] 0;
+    }
+    .bill-detail-item {
+      display: flex;
+      padding: .px2rem(6) [];
+      p {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        flex: 1;
+        font-size: .px2rem(14) [];
+        line-height: .px2rem(16) [];
+      }
+      .title {
+        color: #888;
+      }
+      .value {
+        color: #191919;
+      }
+    }
+  }
+
   .footer {
     bottom: 0;
     left: 0;
     right: 0;
     box-sizing: border-box;
-    padding: 0 .4rem .px2rem(50) [];
+    padding: 0 0 .px2rem(50) [];
     font-size: .px2rem(14) [];
     color: #F02E45;
     line-height: .px2rem(22) [];
