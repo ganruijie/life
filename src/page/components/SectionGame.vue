@@ -101,7 +101,12 @@
                   <template>
                     <div class="data-package">
                       <p class="face-value data-package-item">{{ ele.title }}</p>
-                      <p class="sale-price data-package-item">{{ ele.amount | formatPrice(false) }}(-{{ ele.discount | formatPrice(false) }}Ks)</p>
+                      <p 
+                        v-if="ele.discount"
+                        class="sale-price data-package-item">{{ ele.amount | formatPrice(false) }}(-{{ ele.discount | formatPrice(false) }}Ks)</p>
+                      <p 
+                        v-else
+                        class="sale-price data-package-item">{{ ele.amount | formatPrice(false) }}Ks</p>
                     </div>
                   </template>
                 </div>
@@ -109,28 +114,34 @@
             </li>
           </ul>
         </div>
-        <div
-          @click="$refs.inputGame.input.focus();"
-          class="input-wrapper"
-        >
-          <AccountInput
-            ref="inputGame"
-            :value="accountNum"
-            :focused.sync="focused"
-            @input="accountInput($event)"
-            @change="accountChange"
-          />
-          <p
-            class="phone-num-tips"
-            :class="{ error: error }"
+        <div class="game-input-box">
+          <div
+            @click="$refs.inputGame.input.focus();"
+            class="input-wrapper"
           >
-            {{ error || "" }}
-          </p>
+            <AccountInput
+              ref="inputGame"
+              :value="accountNum"
+              :focused.sync="focused"
+              @input="accountInput($event)"
+              @change="accountChange"
+            />
+          </div>
+          <span 
+            class="address-book-btn" 
+            @click="getConcat">
+            <i class="ic-address-book" />
+          </span>
         </div>
+        <p 
+          class="phone-num-tips" 
+          :class="{ error: error }">
+          {{ error || `${contactName} ${tips ? `(${tips})` : ""}` }}
+        </p>
       </div>
     </div>
     <footer
-      v-if="!hideFooter"
+      v-if="!hideFooter && itemId"
       class="m-footer"
     >
       <StyledButton
@@ -151,7 +162,7 @@ import StyledButton from "@/components/StyledButton.vue";
 import ChargesAmountGroup from "./ChargesAmountGroup";
 import bridge from "@/modules/bridge";
 import { formatPrice } from "@/modules/formatter";
-import { computeSucc, getChargeData } from "@/modules/api";
+import { computeSucc, dispatchRecharge } from "@/modules/api";
 import { isAndroid } from "@/modules/env";
 import Popup from "@/components/Popup";
 import * as url from "@/modules/url";
@@ -186,7 +197,7 @@ export default {
     },
     chargeType: {
       type: [Number, String],
-      default: 1,
+      default: 11,
     }
   },
   data() {
@@ -205,7 +216,9 @@ export default {
       osCode: "",
       //输入框相关
       accountNum: "",
+      contactName: "",
       error: "",
+      tips: "",
       focused: false,
       //区服弹窗
       districtDialogShow: false,
@@ -215,17 +228,7 @@ export default {
       selectDistrictType: false,
       //是否显示充值区服
       selectDistrictShow: false,
-      selectedData: {
-        firstGameId: "",
-        firstGameName: "",
-        secondGameId: "",
-        secondGameName: ""
-      },
-      //选择的充值类型
-      selectChargeTypeShow: false,
-      selectedTypeMeal: null,
       chargeItemList: [],
-      isChargeTypeValid: false,
       swiperOptions: {
         loop: true,
         wrapperClass: "abstract-carousel-wrapper",
@@ -234,7 +237,6 @@ export default {
           el: ".swiper-pagination",
           type: "custom",
           renderCustom: (swiper, current, total) => {
-            console.log(current, total);
             this.swiperPagination.current = current;
             this.swiperPagination.total = total;
           }
@@ -279,7 +281,7 @@ export default {
     //充值按钮是否可以点击
     isDisabled() {
       return !this.accountNum 
-        || !!this.error || !this.isServerValid  || !this.isChargeTypeValid || !this.selectedMeal || (this.selectChargeTypeShow && !this.selectedTypeMeal);
+        || !!this.error || !this.selectGame;
     },
     hideFooter() {
       return this.isAndroid && this.focused;
@@ -321,7 +323,7 @@ export default {
           let result = [
             {categoryId: 11, title: "Discount", itemVOList: [
               {id: 2021092911, title: "PES 2020(SGD)", subtitle: "PES 2021 subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
-                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD" },
+                {goodsId: 202109291110, discount: 214000, amount:  234000, title: "1SGD", activityDescption: "" },
                 {goodsId: 202109291111, discount: 312000, amount:  324000, title: "2SGD" },
                 {goodsId: 202109291112, discount: 309000, amount:  314000, title: "3SGD" },
                 {goodsId: 202109291113, discount: 285000, amount:  299000, title: "4SGD" },
@@ -394,39 +396,39 @@ export default {
             {
               categoryId: 12, title: "Normal", itemVOList: [
                 {id: 2021092911, title: "PES 2020", subtitle: "PES 2020 normal subtitle", imgUrl: img4, imgList: [img1, img2, img3, img4], list: [
-                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
-                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
-                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
-                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
-                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD-N" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD-N" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD-N" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD-N" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD-N" },
                 ]  },
                 {id: 2021092912, title: "PES 2021", subtitle: "PES 2020 normal subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
-                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
-                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
-                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
-                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
-                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD-N" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD-N" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD-N" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD-N" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD-N" },
                 ]   },
                 {id: 2021092913, title: "PES 2022", subtitle: "PES 2020 normal subtitle", imgUrl: img3, imgList: [img1, img2, img3, img4], list: [
-                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
-                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
-                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
-                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
-                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD-N" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD-N" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD-N" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD-N" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD-N" },
                 ]   },
                 {id: 2021092914, title: "PES 2023", subtitle: "PES 2020 normal subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
-                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
-                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
-                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
-                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
-                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD-N" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD-N" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD-N" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD-N" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD-N" },
                 ]   },
                 {id: 2021092915, title: "PES 2024", subtitle: "PES 2020 normal subtitle", imgUrl: img1, imgList: [img1, img2, img3, img4], list: [
-                  {goodsId: 202109291110, amount:  234000, title: "1SGD" },
-                  {goodsId: 202109291111, amount:  324000, title: "2SGD" },
-                  {goodsId: 202109291112, amount:  314000, title: "3SGD" },
-                  {goodsId: 202109291113, amount:  299000, title: "4SGD" },
-                  {goodsId: 202109291114, amount:  288000, title: "5SGD" },
+                  {goodsId: 202109291110, amount:  234000, title: "1SGD-N" },
+                  {goodsId: 202109291111, amount:  324000, title: "2SGD-N" },
+                  {goodsId: 202109291112, amount:  314000, title: "3SGD-N" },
+                  {goodsId: 202109291113, amount:  299000, title: "4SGD-N" },
+                  {goodsId: 202109291114, amount:  288000, title: "5SGD-N" },
                 ]   },
                 {id: 2021092916, title: "PES 2025", subtitle: "PES 2020 normal subtitle", imgUrl: img2, imgList: [img1, img2, img3, img4], list: [
                   {goodsId: 202109291110, amount:  234000, title: "1SGD" },
@@ -466,7 +468,7 @@ export default {
               ]
             }
           ];
-          let res = result.find(item => item.categoryId === this.chargeType);
+          let res = result.find(item => `${item.categoryId}` === `${this.chargeType}` );
           resolve(res);
         });
       } catch (err) {
@@ -476,37 +478,12 @@ export default {
         });
       }
     },
-    //设置充值类型
-    setChargeTypeData(data) {
-      if (!data || Object.keys(data).length === 0) {
-        this.selectChargeTypeShow = false;
-        return;
-      }
-      const list = data.chargeTypeList;
-      this.chargeItemList[0] = {
-        chargeTypeList: []
-      };
-      if (list) {
-        // 要变成与返回结果一样的数据结构
-        // getVirtualGoodsItemVOList: [{ itemVOList: [] }]
-        list.forEach((v, i) => {
-          let obj = {};
-          obj.goodsId = i + 1;
-          obj.goodsName = v;
-          this.chargeItemList[0].chargeTypeList.push(obj);
-        });
-        this.selectedTypeMeal = this.chargeItemList[0].chargeTypeList[0];
-        this.selectChargeTypeShow = true;
-      } else {
-        this.selectChargeTypeShow = false;
-      }
-    },
     /**
      * 选中项目
     */
     selectItem(id) {
       this.gameType = id;
-      window.location.href = `${this.baseUrl}/giftcard.html?itemId=${id}`;
+      window.location.href = `${this.baseUrl}/giftcard.html?chargeType=${this.chargeType}&itemId=${id}`;
     },
     /**
      * @param {String} value
@@ -516,8 +493,10 @@ export default {
       if (this.accountNum === value) {
         return;
       }
+      this.contactName = "";
       this.accountNum = value;
       this.error = "";
+      this.tips = "";
     },
     //验证qq账号是否正确
     accountChange(info) {
@@ -533,6 +512,14 @@ export default {
       //   current: current
       // });
     },
+    // 获取通讯录
+    async getConcat() {
+      const [phoneNum, name] = await bridge.getConcatFromAddressBooks();
+      this.accountNum = phoneNum.replace(/\D/g, "");
+      this.contactName = name;
+      this.isServerValid = false;
+      this.accountChange();
+    },
     selectGameItem(goodsId, item) {
       console.log(item, "itemitem");
       this.selectGame = item;
@@ -542,46 +529,26 @@ export default {
       if (this.isDisabled) {
         return;
       }
-      const chargeStr = this.tencentIds.includes(this.gameType) ? "QQ账号" : "游戏账号";
-      const str = `确定向${chargeStr}\n ${this.accountNum} 充值${this.selectedMeal.description}?`;
-      await this.$tips.showConfirm({text: str});
-      let gameServerId, chargeType;
-      if (this.selectDistrictShow) {
-        gameServerId = this.selectDistrictType ? this.selectedData.secondGameId : this.selectedData.firstGameId;
-      } else {
-        gameServerId = 0;
-      }
-      if (this.selectChargeTypeShow) {
-        chargeType = this.selectedTypeMeal.goodsName;
-      } else {
-        chargeType = "";
-      }
-      // 小于7的版本传入游戏分区gameServer
-      // 大于等于7的版本传入paramsJsonStr字段
       let params = {
-        goodsId: this.selectedMeal.goodsId.toString(),
-        payAmount: this.selectedMeal.salePrice.toString(),
-        mobile: this.accountNum.toString()
+        productName: this.selectGame.title,
+        goodsId: this.selectGame.goodsId.toString(),
+        amount: (this.selectGame.discount || this.selectGame.amount).toString(),
+        activity: this.selectGame.activityDescption,
+        mobile: this.accountNum.toString(),
+        poundage: 0,
       };
-      if (this.supportType < 7) {
-        params.gameServer = gameServerId;
-        params.orderGoodsType = "3";
-      } else {
-        let obj = {};
-        if (chargeType === "") {
-          obj = {
-            gameServerId: gameServerId,
-          };
-        } else {
-          obj = {
-            gameServerId: gameServerId,
-            chargeType: chargeType
-          };
-        }
-        params.paramsJsonStr = JSON.stringify(obj);
-        params.orderGoodsType = "GAME";
-      }
-      bridge.prepareToBuyRechargeGoods(params);
+      await computeSucc(dispatchRecharge)({params: JSON.stringify(params), version: 1, timestamp: +new Date()}).then(res => {
+        const { data } = res;
+        console.log(bridge, "bridgebridge");
+        const str = `Please confirm purchase\n Confirm the Phone Number\n${this.accountNum}?`;
+        this.$tips.showConfirm({text: str}).then(() => {
+          bridge.getOrderReq(data).then(res => {
+            window.location.href = `${this.baseUrl}/pay-result.html?type=3&goodsName=${params.productName}&amount=${params.amount}&orderNo=${res}`;
+          });
+        });
+      }).finally(() => {
+
+      });
     },
   },
   filters: {
@@ -675,18 +642,42 @@ export default {
     height: .px2rem(8) [];
     background-color: #f5f5f5;
   }
-  .input-wrapper {
-    margin-top: .px2rem(20) [];
+  .game-input-box {
+    margin: .px2rem(12) [] .px2rem(16) [] 0;
+    position: relative;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    box-sizing: border-box;
-    flex: 1;
-    padding-left: .px2rem(12) [];
-    padding-bottom: .px2rem(5) [];
-    font-size: 0;
+    height: .px2rem(48) [];
+    background: #E9EDFB;
+    opacity: 1;
+    border: 1px solid rgba(54, 66, 218, 0.07999999821186066);
+    border-radius: 4px 4px 4px 4px;
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      flex: 1;
+      padding-left: .px2rem(12) [];
+      font-size: 0;
+    }
+    .address-book-btn {
+      display: block;
+      padding: .px2rem(0) [] .px2rem(12) [];
+      height: 100%;
+      .ic-address-book {
+        display: inline-block;
+        width: .px2rem(21.525) [];
+        height: 100%;
+        background-image: url("~@/assets/recharge/ic-address-book.png");
+        background-repeat: no-repeat;
+        background-size: .px2rem(21.525) [];
+        background-position: center;
+      }
+    }
   }
+  
   .phone-num-tips {
+    margin: 0 .px2rem(16) [] .px2rem(20) [];
     flex-basis: .px2rem(15) [];
     line-height: .px2rem(15) [];
     font-size: .px2rem(10) [];
@@ -802,7 +793,7 @@ export default {
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    height: 100vw;
+    height: 100vh;
     .f-flex-column-100per-H() {
       display: flex;
       flex-direction: row;
@@ -917,6 +908,9 @@ export default {
             background: #ffffff;
             color: @color-select;
             border: 1px solid @color-select;
+            .sale-price, .face-value {
+              color: @color-select !important;
+            }
           }
           &[disabled]{
             color: #AAA;
@@ -945,6 +939,7 @@ export default {
           font-size: .px2rem(14) [];
           white-space: nowrap;
           .f-sf-pro-text-semibold();
+          color: #333;
         }
         .sale-price {
           vertical-align: middle;

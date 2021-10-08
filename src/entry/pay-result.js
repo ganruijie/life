@@ -4,6 +4,7 @@ import  initialize from "@/init";
 import Tips from "@/components/tips/index.vue";
 import App from "@/page/PayResult";
 
+
 Vue.use(Tips);
 
 initialize(() =>{

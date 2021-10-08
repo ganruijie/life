@@ -12,10 +12,10 @@
       </div>
       <div class="success-content">
         <div class="title">
-          <h3 class="name">{{ type === '1' ? 'MPT' : type === '2' ? 'Electricity Bill' : '--' }}</h3>
+          <h3 class="name">{{ type === '1' ? 'MPT' : type === '2' ? 'Electricity Bill' : type === '3' ? 'Gift Card' : '' }}</h3>
           <h3 class="pay-amount">{{ amount | formatPrice(true) }}<span class="ks">Ks</span></h3>
           <p 
-            v-if="type === '1'" 
+            v-if="type === '1' || type === '3'" 
             class="pay-goods-name">{{ goodsName }}</p>
         </div>
       </div>
@@ -54,21 +54,46 @@
           </div>
         </div>
       </div>
+      <div 
+        v-if="type === '3'"
+        class="gift-card-detail"
+      >
+        <div class="divide-line" />
+        <div class="detail-item">
+          <p class="item-sn">Serial Number: 3B10#756857</p>
+          <button 
+            class="copy j-copy-sn"
+            data-clipboard-text="3B10#756857"
+            @click="clickCopy('.j-copy-sn')">Copy</button>
+        </div>
+        <div class="detail-item">
+          <p class="item-code">Redeem Code: X9H3JEG2367V</p>
+          <button 
+            class="copy j-copy-code" 
+            data-clipboard-text="X9H3JEG2367V"
+            @click="clickCopy('.j-copy-code')">Copy</button>
+        </div>
+      </div>
     </main>
     <div>
       <p style="font-size:14px;">
         <a href="/bill.html">Bill Payment </a>
       </p>
+      <p style="font-size:14px;">
+        <a href="/giftcard.html">GiftCard </a>
+      </p>
     </div>
     <div class="footer">
       <p v-if="type === '1'">* The Top Up transaction is generally completed within 30 mins after it has been sent.</p>
       <p v-if="type === '2'">* The  transaction is generally completed within 3 days after it has been sent.</p>
+      <p v-if="type === '3'">* The Top Up transaction is generally completed within 30 mins after it has been sent.</p>
     </div>
   </div>
 </template>
 <script>
 import * as url from "@/modules/url";
 import { formatPrice } from "@/modules/formatter";
+import ClipboardJS from "clipboard";
 export default {
   name: "PayResult",
   computed: {
@@ -99,6 +124,21 @@ export default {
     goodsId() {
       return url.getParam("goodsId");
     },
+  },
+  methods: {
+    clickCopy(className) {
+      let clipboard = new ClipboardJS(className);
+      clipboard.on("success", () => {
+        console.log("0000");
+        this.$tips.showAlert({ text: "Copy successfully" });
+        clipboard.destroy();
+      });
+      clipboard.on("error", () => {
+        console.log("1111");
+        this.$tips.showAlert({ text: "Copy failed" });
+        clipboard.destroy();
+      });
+    }
   },
   filters: {
     formatPrice: formatPrice
@@ -190,7 +230,33 @@ export default {
       }
     }
   }
-
+  .gift-card-detail {
+    position: relative;
+    margin-top: .px2rem(24) [];
+    .divide-line {
+      .f-divide-line(@color:#E6E6E6, @direction: top);
+      margin: .px2rem(24) [] 0 .px2rem(32) [];
+    }
+    .detail-item {
+      padding: .px2rem(14) [] .px2rem(12) [];
+      border-radius: .px2rem(4) [];
+      border: 1px solid rgba(143, 146, 161, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .px2rem(14) [];
+      margin-bottom: .px2rem(10) [];
+      .item-sn, .item-code {
+        color: #333;
+      }
+      .copy {
+        color: #5761B5;
+        border: 1px solid #5761B5;
+        padding: .px2rem(5) [] .px2rem(10) [];
+        border-radius: .px2rem(4) [];
+      }
+    }
+  }
   .footer {
     bottom: 0;
     left: 0;

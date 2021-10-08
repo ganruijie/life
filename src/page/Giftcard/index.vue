@@ -55,8 +55,12 @@ export default {
     itemId() {
       return url.getParam("itemId");
     },
+    type() {
+      return url.getParam("chargeType") || 11;
+    }
   },
   created() {
+    this.chargeType = this.type || 11;
     this.init();
   },
   methods: {
@@ -80,4 +84,7 @@ export default {
 
 <style lang="less" scoped>
   @import "~@/assets/style/common.less";
+  .m-body {
+    margin: 0;
+  }
 </style>

@@ -10,7 +10,7 @@
       <div class="alert">
         <div class="content">{{ text }}</div>
         <div class="btn-group">
-          <span class="confirm">确定</span>
+          <span class="confirm">Ok</span>
         </div>
       </div>
     </div>
